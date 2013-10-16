@@ -25,4 +25,4 @@ Getting Started
 Credits
 -------
 
-Copyright ©2013 by Joel Burton <joel@joelburton.com>
+Copyright 2013 by Joel Burton <joel@joelburton.com>
