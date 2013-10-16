@@ -16,6 +16,7 @@ requires = [
     'waitress',
     'psycopg2',
     'deform',
+    'colanderalchemy',
     ]
 
 testing_extras = ['nose', 'coverage']

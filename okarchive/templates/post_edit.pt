@@ -3,18 +3,15 @@
 
         <h1>${post.title}</h1>
 
-        <p>Back to <a href="${post.journal_name}">${post.journal_name}</a></p>
+        <p>Back to <a href="${journal_url}">${post.journal_name}</a></p>
 
-        <!-- CSS -->
-        <link rel="stylesheet" href="/deform/css/form.css" type="text/css"/>
-        <!-- JavaScript -->
-        <script type="text/javascript"
-                src="/deform/scripts/jquery-2.0.3.min.js"></script>
+        <link rel="stylesheet" href="/deform/css/form.css"/>
+        <script src="/deform/scripts/jquery-2.0.3.min.js"></script>
+
         <link tal:repeat="css registry['css']" rel="stylesheet" href="${req.static_url(css)}"/>
-        <script tal:repeat="js registry['js']" type="text/javascript" src="${req.static_url(js)}"></script>
-        <div tal:replace="structure form"></div>
+        <script tal:repeat="js registry['js']" src="${req.static_url(js)}"></script>
 
-        <i>${post.creation_date}</i>
+        <div tal:replace="structure form"></div>
 
     </metal:content>
 </metal:macro>

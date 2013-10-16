@@ -27,6 +27,8 @@ from sqlalchemy.orm import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
+import deform
+
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
@@ -34,25 +36,41 @@ Base = declarative_base()
 class Journal(Base):
     """Journal."""
     __tablename__ = 'journals'
-    name = Column(String, primary_key=True)
+    name = Column(String,
+                  primary_key=True,
+    )
 
 
 class Post(Base):
     """Post."""
     __tablename__ = 'posts'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer,
+                primary_key=True,
+    )
     journal_name = Column(String, ForeignKey('journals.name',
                                              ondelete='CASCADE',
                                              onupdate='CASCADE'), nullable=False)
-    title = Column(String, nullable=False)
-    text = Column(Text)
-    creation_date = Column(DateTime, server_default=func.now())
+    title = Column(String,
+                   nullable=False,
+                   default='',
+                   info={'colanderalchemy': {'title': 'Title'}},
+    )
+    text = Column(Text,
+                  default='',
+                  info={'colanderalchemy': {'widget': deform.widget.RichTextWidget(),
+                                            'title': 'Body Text'}},
+    )
+    creation_date = Column(DateTime,
+                           server_default=func.now(),
+    )
 
     journal = relationship("Journal",
                            backref=backref('posts',
                                            order_by=id,
                                            cascade='all, delete-orphan',
-                                           passive_deletes=True))
+                                           passive_deletes=True),
+    )
+
 
 Index('post_journalname', Post.journal_name)
 Index('post_title', Post.title)
@@ -61,19 +79,32 @@ Index('post_title', Post.title)
 class Comment(Base):
     """Comment."""
     __tablename__ = 'comments'
-    id = Column(Integer, primary_key=True)
-    post_id = Column(Integer, ForeignKey('posts.id',
-                                         ondelete='CASCADE',
-                                         onupdate='CASCADE'), nullable=False)
-    user_id = Column(String, nullable=False) # FIXME
-    text = Column(Text, nullable=False)
-    creation_date = Column(DateTime, server_default=func.now())
-    hidden = Column(Boolean, default=False)
+    id = Column(Integer,
+                primary_key=True,
+    )
+    post_id = Column(Integer,
+                     ForeignKey('posts.id', ondelete='CASCADE', onupdate='CASCADE'),
+                     nullable=False,
+    )
+    user_id = Column(String,
+                     nullable=False,
+    ) # FIXME
+    text = Column(Text,
+                  nullable=False,
+    )
+    creation_date = Column(DateTime,
+                           server_default=func.now(),
+    )
+    hidden = Column(Boolean,
+                    default=False,
+    )
 
     post = relationship("Post",
-                           backref=backref('comments',
-                                           order_by=id,
-                                           cascade='all, delete-orphan',
-                                           passive_deletes=True))
+                        backref=backref('comments',
+                                        order_by=id,
+                                        cascade='all, delete-orphan',
+                                        passive_deletes=True)
+    )
+
 
 Index('comment_postid', Comment.post_id)
