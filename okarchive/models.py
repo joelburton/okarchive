@@ -6,6 +6,7 @@ from sqlalchemy import (
     String,
     ForeignKey,
     DateTime,
+    Boolean,
     func,
     )
 
@@ -45,6 +46,25 @@ class Post(Base):
                                            cascade='all, delete-orphan',
                                            passive_deletes=True))
 
-
 Index('post_journalname', Post.journal_name)
 Index('post_title', Post.title)
+
+
+class Comment(Base):
+    __tablename__ = 'comments'
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer, ForeignKey('posts.id',
+                                         ondelete='CASCADE',
+                                         onupdate='CASCADE'), nullable=False)
+    user_id = Column(String, nullable=False) # FIXME
+    text = Column(Text, nullable=False)
+    creation_date = Column(DateTime, server_default=func.now())
+    hidden = Column(Boolean, default=False)
+
+    post = relationship("Post",
+                           backref=backref('comments',
+                                           order_by=id,
+                                           cascade='all, delete-orphan',
+                                           passive_deletes=True))
+
+Index('comment_postid', Comment.post_id)
