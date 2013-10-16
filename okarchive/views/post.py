@@ -35,6 +35,7 @@ class PostView(object):
     @view_config(route_name='post',
                  renderer='okarchive:templates/post.pt')
     def view(self):
+        """Show a single post."""
         post = self._get_post()
         return dict(post=post,
                     edit_url=self.request.route_url('post_edit',
@@ -46,6 +47,7 @@ class PostView(object):
     @view_config(route_name='post_edit',
                  renderer='okarchive:templates/post_edit.pt')
     def edit(self):
+        """Show edit form or update post from edit form."""
         post = self._get_post()
 
         if 'form.Submitted' in self.request.POST:
@@ -60,6 +62,7 @@ class PostView(object):
     @view_config(route_name='post_add',
                  renderer='okarchive:templates/post_edit.pt')
     def add(self):
+        """Show edit form for adding or add from form."""
         if 'form.Submitted' in self.request.POST:
             post = Post(title=self.request.POST['title'],
                         text=self.request.POST['text'],

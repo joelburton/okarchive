@@ -1,3 +1,9 @@
+"""Models for OkArchive journals.
+
+These classes are for the journals, posts, and comments on the posts.
+They will be persisted in SQLAlchemy.
+"""
+
 from sqlalchemy import (
     Column,
     Index,
@@ -26,11 +32,13 @@ Base = declarative_base()
 
 
 class Journal(Base):
+    """Journal."""
     __tablename__ = 'journals'
     name = Column(String, primary_key=True)
 
 
 class Post(Base):
+    """Post."""
     __tablename__ = 'posts'
     id = Column(Integer, primary_key=True)
     journal_name = Column(String, ForeignKey('journals.name',
@@ -51,6 +59,7 @@ Index('post_title', Post.title)
 
 
 class Comment(Base):
+    """Comment."""
     __tablename__ = 'comments'
     id = Column(Integer, primary_key=True)
     post_id = Column(Integer, ForeignKey('posts.id',

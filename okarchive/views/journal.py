@@ -18,6 +18,7 @@ class JournalView(object):
     @view_config(route_name='journal',
                  renderer='okarchive:templates/journal.pt')
     def view(self):
+        """View journal and list of posts."""
         journal_name = self.request.matchdict['journal_name']
         journal = DBSession.query(Journal) \
             .filter(Journal.name == journal_name) \
