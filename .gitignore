@@ -1,3 +1,4 @@
 okarchive.sqlite
 .coverage
 okarchive.egg-info
+docs/_build/*
