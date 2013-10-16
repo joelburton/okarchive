@@ -17,6 +17,9 @@ requires = [
     'psycopg2',
     ]
 
+testing_extras = ['nose', 'coverage']
+docs_extras = ['Sphinx']
+
 setup(name='okarchive',
       version='0.0',
       description='okarchive',
@@ -35,6 +38,10 @@ setup(name='okarchive',
       include_package_data=True,
       zip_safe=False,
       test_suite='okarchive',
+      extras_require={
+          'testing': testing_extras,
+          'docs': docs_extras,
+      },
       install_requires=requires,
       entry_points="""\
       [paste.app_factory]
