@@ -1,13 +1,16 @@
-<!doctype html>
-<html>
-<body>
-<h1 tal:content="journal_name">[journal name]</h1>
-<ul>
-    <li tal:repeat="post posts">
-        <a href="${request.route_url('post', journal_name=post.journal_name, post_id=post.id)}">
-        ${post.title}</a>
-    </li>
-</ul>
-<p><a href="${add_url}">Add post</a></p>
-</body>
-</html>
+<metal:macro use-macro="load:main.pt">
+    <metal:content fill-slot="content">
+
+        <h1 tal:content="journal_name">[journal name]</h1>
+        <ul>
+            <li tal:repeat="post posts">
+                <a href="${request.route_url('post',
+                        journal_name=post.journal_name,
+                        post_id=post.id)}">
+                        ${post.title}</a>
+            </li>
+        </ul>
+        <p><a href="${add_url}">Add post</a></p>
+
+    </metal:content>
+</metal:macro>

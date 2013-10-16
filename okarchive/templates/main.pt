@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:metal="http://xml.zope.org/namespaces/metal">
+
+<head>
+    <title>OkArchive</title>
+</head>
+
+<body>
+
+<metal:content define-slot="content">
+</metal:content>
+
+<hr/>
+©2013
+
+</body>
+</html>

@@ -1,25 +1,17 @@
-<!doctype html>
-<html>
-<body>
-<h1>${post.title}</h1>
+<metal:macro use-macro="load:main.pt">
+    <metal:content fill-slot="content">
 
-<p>Back to
-    <a href="${post.journal_name}">${post.journal_name}</a>
-</p>
+        <h1>${post.title}</h1>
 
-<form action="${action}" method="POST">
-    <p>
-        Title: <input type="text" name="title" value="${post.title}" />
-    </p>
+        <p>Back to <a href="${post.journal_name}">${post.journal_name}</a></p>
 
-    <div>
-        <textarea name="text" tal:content="post.text">[text]</textarea>
-    </div>
+        <form action="${action}" method="POST">
+            <p> Title: <input type="text" name="title" value="${post.title}"/></p>
+            <div><textarea name="text" tal:content="post.text">[text]</textarea></div>
+            <input type="submit" name="form.Submitted"/>
+        </form>
 
-    <input type="submit" name="form.Submitted" />
-</form>
+        <i>${post.creation_date}</i>
 
-<i>${post.creation_date}</i>
-</body>
-
-</html>
+    </metal:content>
+</metal:macro>
