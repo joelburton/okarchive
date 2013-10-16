@@ -9,5 +9,20 @@ This is written using the Pyramid web application framework. It can store its da
 relational database that SQLAlchemy can use. It was developed and tested with SQLite and
 PostgreSQL.
 
-Copyright ©2013 by Joel Burton <joel@joelburton.com>
 
+Getting Started
+---------------
+
+1. cd <directory containing this file>
+
+2. $venv/bin/python setup.py develop
+
+3. $venv/bin/initialize_okarchive_db development.ini
+
+4. $venv/bin/pserve development.ini
+
+
+Credits
+-------
+
+Copyright ©2013 by Joel Burton <joel@joelburton.com>
