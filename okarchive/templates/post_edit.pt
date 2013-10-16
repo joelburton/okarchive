@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<body>
+<h1>${post.title}</h1>
+
+<p>Back to
+    <a href="${post.journal_name}">${post.journal_name}</a>
+</p>
+
+<form action="." method="POST">
+<textarea name="text" tal:content="post.text">
+
+</textarea>
+</form>
+
+<i>${post.creation_date}</i>
+</body>
+
+</html>

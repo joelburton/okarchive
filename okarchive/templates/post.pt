@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<body>
+    <h1>${post.title}</h1>
+    <p>Back to
+        <a href="${post.journal_name}">${post.journal_name}</a>
+    </p>
+    <div tal:content="structure post.text">[text]</div>
+    <i>${post.creation_date}</i>
+</body>
+
+</html>

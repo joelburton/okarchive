@@ -16,5 +16,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('journal', '/journals/{journal_name}')
+    config.add_route('post', '/journals/{journal_name}/{post_id}')
+    config.add_route('post_edit', '/journals/{journal_name}/{post_id}/edit')
     config.scan()
     return config.make_wsgi_app()

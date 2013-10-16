@@ -20,3 +20,23 @@ def journal_view(request):
 
     return {'journal_name': journal_name, 'posts': journal.posts}
 
+
+class PostView(object):
+    def __init__(self, request):
+        self.request = request
+
+        journal_name = request.matchdict['journal_name']
+        post_id = request.matchdict['post_id']
+        try:
+            self.post = DBSession.query(Post).filter(Post.journal_name == journal_name).\
+                filter(Post.id == post_id).first()
+        except DBAPIError:
+            return Response('No such post', content_type='text/plain', status_int=500)
+
+    @view_config(route_name='post', renderer='templates/post.pt')
+    def view(self):
+        return {'post': self.post}
+
+    @view_config(route_name='post_edit', renderer='templates/post_edit.pt')
+    def edit(self):
+        return {'post': self.post}
