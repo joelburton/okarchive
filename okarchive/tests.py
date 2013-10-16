@@ -14,6 +14,7 @@ def _initTestingDB():
         Base,
         Journal,
         Post,
+        Comment,
         )
 
     engine = create_engine('sqlite://')
@@ -24,7 +25,40 @@ def _initTestingDB():
         DBSession.add(journal)
         post = Post(journal_name='distractionbike', title='First Post')
         DBSession.add(post)
+        DBSession.flush()
+        comment = Comment(post_id=post.id, user_id='bob', text='First Comment')
+        DBSession.add(comment)
     return DBSession
+
+
+class TestModel(unittest.TestCase):
+    def setUp(self):
+        _initTestingDB()
+
+    def tearDown(self):
+        DBSession.remove()
+
+    def test_journal(self):
+        from .models import Journal
+        journal = DBSession.query(Journal).filter(Journal.name == 'distractionbike').one()
+        self.assertEqual(journal.name, 'distractionbike')
+        self.assertEqual(len(journal.posts), 1)
+
+    def test_posts(self):
+        from .models import Post
+        post = DBSession.query(Post).filter(Post.id == 1).one()
+        self.assertEqual(post.journal_name, 'distractionbike')
+        self.assertEqual(post.title, 'First Post')
+        self.assertEqual(post.journal.name, 'distractionbike')
+        self.assertEqual(len(post.comments), 1)
+
+    def test_comments(self):
+        from .models import Comment
+        comment = DBSession.query(Comment).filter(Comment.id == 1).one()
+        self.assertEqual(comment.user_id, 'bob')
+        self.assertEqual(comment.text, 'First Comment')
+        self.assertEqual(comment.hidden, False)
+        self.assertEqual(comment.post.id, 1)
 
 
 class TestJournalView(unittest.TestCase):
