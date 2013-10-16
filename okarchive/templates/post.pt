@@ -3,10 +3,11 @@
 <body>
     <h1>${post.title}</h1>
     <p>Back to
-        <a href="${post.journal_name}">${post.journal_name}</a>
+        <a href="${journal_url}">${post.journal_name}</a>
     </p>
     <div tal:content="structure post.text">[text]</div>
     <i>${post.creation_date}</i>
+    <a href="${edit_url}">Edit post</a>
 </body>
 
 </html>

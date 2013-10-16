@@ -24,7 +24,10 @@ def journal_view(request):
     if not journal:
         raise HTTPNotFound('No such journal.')
 
-    return {'journal_name': journal_name, 'posts': journal.posts}
+    return dict(journal_name=journal_name,
+                posts=journal.posts,
+                add_url=request.route_url('post_add', journal_name=journal_name),
+    )
 
 
 class PostView(object):
@@ -47,7 +50,13 @@ class PostView(object):
     @view_config(route_name='post',
                  renderer='templates/post.pt')
     def view(self):
-        return {'post': self._get_post()}
+        post = self._get_post()
+        return dict(post=post,
+                    edit_url=self.request.route_url('post_edit',
+                            journal_name=post.journal_name,
+                            post_id=post.id),
+                    journal_url=self.request.route_url('journal', journal_name=post.journal_name),
+                    )
 
     @view_config(route_name='post_edit',
                  renderer='templates/post_edit.pt')

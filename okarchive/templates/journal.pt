@@ -4,8 +4,10 @@
 <h1 tal:content="journal_name">[journal name]</h1>
 <ul>
     <li tal:repeat="post posts">
-        <b tal:content="post.title">[title]</b>
+        <a href="${request.route_url('post', journal_name=post.journal_name, post_id=post.id)}">
+        ${post.title}</a>
     </li>
 </ul>
+<p><a href="${add_url}">Add post</a></p>
 </body>
 </html>
