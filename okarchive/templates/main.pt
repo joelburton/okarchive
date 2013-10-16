@@ -4,12 +4,17 @@
 
 <head>
     <title>OkArchive</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet"
+          href="${request.static_url('okarchive:static/style.css')}"
+          type="text/css" media="screen" charset="utf-8"/>
 </head>
 
 <body>
-
+<div id="body">
 <metal:content define-slot="content">
 </metal:content>
+</div>
 
 <hr/>
 ©2013
