@@ -1,5 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
 
@@ -39,4 +40,9 @@ class PostView(object):
 
     @view_config(route_name='post_edit', renderer='templates/post_edit.pt')
     def edit(self):
-        return {'post': self.post}
+        if 'form.Submitted' in self.request.params:
+            self.post.title = self.request.POST['title']
+            self.post.text = self.request.POST['text']
+            return HTTPFound(location=self.request.route_url(
+                'post', journal_name=self.post.journal_name, post_id=self.post.id))
+        return {'post': self.post, 'action': self.request.url}

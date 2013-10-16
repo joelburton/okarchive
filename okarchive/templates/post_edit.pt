@@ -7,10 +7,16 @@
     <a href="${post.journal_name}">${post.journal_name}</a>
 </p>
 
-<form action="." method="POST">
-<textarea name="text" tal:content="post.text">
+<form action="${action}" method="POST">
+    <p>
+        Title: <input type="text" name="title" value="${post.title}" />
+    </p>
 
-</textarea>
+    <div>
+        <textarea name="text" tal:content="post.text">[text]</textarea>
+    </div>
+
+    <input type="submit" name="form.Submitted" />
 </form>
 
 <i>${post.creation_date}</i>
