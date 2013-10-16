@@ -3,6 +3,8 @@ from sqlalchemy import (
     Index,
     Integer,
     Text,
+    String,
+    ForeignKey,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,6 +12,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
+    relationship,
+    backref,
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -18,14 +22,15 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 
-class MyModel(Base):
-    __tablename__ = 'models'
+class Journal(Base):
+    __tablename__ = 'journals'
+    name = Column(String, primary_key=True)
+
+
+class Post(Base):
+    __tablename__ = 'posts'
     id = Column(Integer, primary_key=True)
-    name = Column(Text)
-    value = Column(Integer)
+    journal_name = Column(String, ForeignKey('journals.name'), nullable=False)
+    title = Column(String, nullable=False)
 
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
-Index('my_index', MyModel.name, unique=True, mysql_length=255)
+    journal = relationship("Journal", backref=backref('posts', order_by=id))
