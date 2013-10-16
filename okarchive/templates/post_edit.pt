@@ -5,11 +5,14 @@
 
         <p>Back to <a href="${post.journal_name}">${post.journal_name}</a></p>
 
-        <form action="${action}" method="POST">
-            <p> Title: <input type="text" name="title" value="${post.title}"/></p>
-            <div><textarea name="text" tal:content="post.text">[text]</textarea></div>
-            <input type="submit" name="form.Submitted"/>
-        </form>
+        <!-- CSS -->
+        <link rel="stylesheet" href="/deform/css/form.css" type="text/css"/>
+        <!-- JavaScript -->
+        <script type="text/javascript"
+                src="/deform/scripts/jquery-2.0.3.min.js"></script>
+        <link tal:repeat="css registry['css']" rel="stylesheet" href="${req.static_url(css)}"/>
+        <script tal:repeat="js registry['js']" type="text/javascript" src="${req.static_url(js)}"></script>
+        <div tal:replace="structure form"></div>
 
         <i>${post.creation_date}</i>
 

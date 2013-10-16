@@ -143,10 +143,12 @@ class TestPostAdd(unittest.TestCase):
         from .views import PostView
         from .models import Post
 
-        request = testing.DummyRequest(post={'form.Submitted':1, 'title':'Yo', 'text':'There'})
+        request = testing.DummyRequest(post={'add':1, 'title':'Yo', 'text':'There'})
         request.matchdict['journal_name'] = 'distractionbike'
         view = PostView(request)
-        self.assertRaises(HTTPFound, view.add)
+        info = view.add()
+        self.assertEqual(info.status, '302 Found')
+        self.assertEqual(info.location, 'http://example.com/journals/distractionbike/2')
 
         post = DBSession.query(Post).filter(Post.id == 2).one()
         self.assertEqual(post.title, 'Yo')
@@ -179,11 +181,13 @@ class TestPostEdit(unittest.TestCase):
         from .views import PostView
         from .models import Post
 
-        request = testing.DummyRequest(post={'form.Submitted': 1, 'title': 'Yo', 'text': 'There'})
+        request = testing.DummyRequest(post={'edit': 1, 'title': 'Yo', 'text': 'There'})
         request.matchdict['journal_name'] = 'distractionbike'
         request.matchdict['post_id'] = 1
         view = PostView(request)
-        self.assertRaises(HTTPFound, view.edit)
+        info = view.edit()
+        self.assertEqual(info.status, '302 Found')
+        self.assertEqual(info.location, 'http://example.com/journals/distractionbike/1')
 
         post = DBSession.query(Post).filter(Post.id == 1).one()
         self.assertEqual(post.title, 'Yo')
@@ -221,3 +225,5 @@ class FunctionalTests(unittest.TestCase):
         self.assertTrue(b'<h1>First Post</h1>' in res.body)
         self.assertTrue(b'<a href="http://localhost/journals/distractionbike/1/edit">Edit post'
                 in res.body)
+
+    # FIXME: add func tests for post-add, post-edit, and for validation problems

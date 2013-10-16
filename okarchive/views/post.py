@@ -9,9 +9,22 @@ from okarchive.models import (
     Post,
     )
 
+import colander
+import deform
+
+
+class PostSchema(colander.MappingSchema):
+    title = colander.SchemaNode(
+        colander.String())
+    text = colander.SchemaNode(
+        colander.String(),
+        widget=deform.widget.RichTextWidget())
+
 
 class PostView(object):
     """View and edit view for posts."""
+
+    schema = PostSchema()
 
     def __init__(self, request):
         self.request = request
@@ -28,7 +41,7 @@ class PostView(object):
         return post
 
     def _redirect_to_post_view(self, post):
-        raise HTTPFound(location=self.request.route_url('post',
+        return HTTPFound(location=self.request.route_url('post',
                                                         journal_name=post.journal_name,
                                                         post_id=post.id))
 
@@ -48,31 +61,57 @@ class PostView(object):
                  renderer='okarchive:templates/post_edit.pt')
     def edit(self):
         """Show edit form or update post from edit form."""
+
+        form = deform.Form(self.schema, buttons=('edit',))
         post = self._get_post()
 
-        if 'form.Submitted' in self.request.POST:
-            post.title = self.request.POST['title']
-            post.text = self.request.POST['text']
+        if 'edit' in self.request.POST:
+            controls = self.request.POST.items() # get the form controls
+            try:
+                appstruct = form.validate(controls)  # call validate
+            except deform.ValidationFailure as e: # catch the exception
+                return dict(form=e.render(),
+                            registry=form.get_widget_resources(),
+                            post=post,
+                )
+            post.title = appstruct['title']
+            post.text = appstruct['text']
             return self._redirect_to_post_view(post)
         else:
-            return dict(post=post,
-                        action=self.request.url,
+            appstruct = {'title': post.title, 'text': post.text}
+            return dict(form=form.render(appstruct),
+                        registry=form.get_widget_resources(),
+                        post=post,
             )
 
     @view_config(route_name='post_add',
                  renderer='okarchive:templates/post_edit.pt')
     def add(self):
         """Show edit form for adding or add from form."""
-        if 'form.Submitted' in self.request.POST:
-            post = Post(title=self.request.POST['title'],
-                        text=self.request.POST['text'],
+
+        form = deform.Form(self.schema, buttons=('add',))
+        post = Post(title='Title',
+                    journal_name=self.request.matchdict['journal_name'])
+
+        if 'add' in self.request.POST:
+            controls = self.request.POST.items() # get the form controls
+            try:
+                appstruct = form.validate(controls)  # call validate
+            except deform.ValidationFailure as e: # catch the exception
+                return dict(form=e.render(),
+                            registry=form.get_widget_resources(),
+                            post=post,
+                )
+            # the form submission succeeded, we have the data
+            post = Post(title=appstruct['title'],
+                        text=appstruct['text'],
                         journal_name=self.request.matchdict['journal_name'])
             DBSession.add(post)
             DBSession.flush()     # make post.id available to us
             return self._redirect_to_post_view(post)
+
         else:
-            post = Post(title='Title',
-                        journal_name=self.request.matchdict['journal_name'])
-            return dict(post=post,
-                        action=self.request.url,
+            return dict(form=form.render(),
+                        registry=form.get_widget_resources(),
+                        post=post,
             )

@@ -15,6 +15,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'psycopg2',
+    'deform',
     ]
 
 testing_extras = ['nose', 'coverage']

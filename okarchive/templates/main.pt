@@ -19,5 +19,9 @@
 <hr/>
 ©2013
 
+<script type="text/javascript">
+    deform.load()
+</script>
+
 </body>
 </html>
