@@ -29,8 +29,9 @@ class TestMyView(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views import my_view
+        from .views import journal_view
         request = testing.DummyRequest()
-        info = my_view(request)
-        self.assertEqual(info['one'].name, 'distractionbike')
-        self.assertEqual(info['project'], 'okarchive')
+        request.matchdict['journal_name'] = 'distractionbike'
+        info = journal_view(request)
+        self.assertEqual(info['journal_name'], 'distractionbike')
+        self.assertEqual(len(info['posts']), 1)

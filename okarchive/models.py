@@ -5,6 +5,8 @@ from sqlalchemy import (
     Text,
     String,
     ForeignKey,
+    DateTime,
+    func,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -30,7 +32,19 @@ class Journal(Base):
 class Post(Base):
     __tablename__ = 'posts'
     id = Column(Integer, primary_key=True)
-    journal_name = Column(String, ForeignKey('journals.name'), nullable=False)
+    journal_name = Column(String, ForeignKey('journals.name',
+                                             ondelete='CASCADE',
+                                             onupdate='CASCADE'), nullable=False)
     title = Column(String, nullable=False)
+    text = Column(Text)
+    creation_date = Column(DateTime, server_default=func.now())
 
-    journal = relationship("Journal", backref=backref('posts', order_by=id))
+    journal = relationship("Journal",
+                           backref=backref('posts',
+                                           order_by=id,
+                                           cascade='all, delete-orphan',
+                                           passive_deletes=True))
+
+
+Index('post_journalname', Post.journal_name)
+Index('post_title', Post.title)

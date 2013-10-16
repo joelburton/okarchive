@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+<body>
+<h1 tal:content="journal_name">[journal name]</h1>
+<ul>
+    <li tal:repeat="post posts">
+        <b tal:content="post.title">[title]</b>
+    </li>
+</ul>
+</body>
+</html>
