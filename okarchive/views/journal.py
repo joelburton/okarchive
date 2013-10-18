@@ -8,8 +8,9 @@ from okarchive.models import (
     Journal,
     )
 
+from pyramid.security import authenticated_userid
 
-class JournalView(object):
+class JournalView:
     """View for journals."""
 
     def __init__(self, request):
@@ -29,4 +30,5 @@ class JournalView(object):
         return dict(journal_name=journal_name,
                     posts=journal.posts,
                     add_url=self.request.route_url('post_add', journal_name=journal_name),
+                    logged_in=authenticated_userid(self.request),
         )

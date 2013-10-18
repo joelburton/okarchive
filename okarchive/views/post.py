@@ -12,8 +12,9 @@ from okarchive.models import (
 import deform
 import colanderalchemy
 
+from pyramid.security import authenticated_userid
 
-class PostView(object):
+class PostView:
     """View and edit view for posts."""
 
     schema = colanderalchemy.SQLAlchemySchemaNode(
@@ -39,11 +40,13 @@ class PostView(object):
 
     def _redirect_to_post_view(self, post):
         return HTTPFound(location=self.request.route_url('post',
-                                                        journal_name=post.journal_name,
-                                                        post_id=post.id))
+                                                         journal_name=post.journal_name,
+                                                         post_id=post.id))
 
     @view_config(route_name='post',
-                 renderer='okarchive:templates/post.pt')
+                 renderer='okarchive:templates/post.pt',
+                 permission='view',
+    )
     def view(self):
         """Show a single post."""
         post = self._get_post()
@@ -52,14 +55,17 @@ class PostView(object):
                                                     journal_name=self.journal_name,
                                                     post_id=post.id),
                     journal_url=self.journal_url,
+                    logged_in=authenticated_userid(self.request),
         )
 
     @view_config(route_name='post_edit',
-                 renderer='okarchive:templates/post_edit.pt')
+                 renderer='okarchive:templates/post_edit.pt',
+                 permission='edit',
+    )
     def edit(self):
         """Show edit form or update post from edit form."""
 
-        form = deform.Form(self.schema, buttons=('edit',))
+        form = deform.Form(self.schema, buttons=('edit', 'cancel'))
         post = self._get_post()
 
         if 'edit' in self.request.POST:
@@ -71,9 +77,14 @@ class PostView(object):
                             registry=form.get_widget_resources(),
                             post=post,
                             journal_url=self.journal_url,
+                            logged_in=authenticated_userid(self.request),
                 )
             post.title = appstruct['title']
             post.text = appstruct['text']
+            self.request.session.flash(('success', 'Edited.'))
+            return self._redirect_to_post_view(post)
+        elif 'cancel' in self.request.POST:
+            self.request.session.flash(('info', 'Cancelled.'))
             return self._redirect_to_post_view(post)
         else:
             appstruct = {'title': post.title, 'text': post.text}
@@ -81,10 +92,23 @@ class PostView(object):
                         registry=form.get_widget_resources(),
                         post=post,
                         journal_url=self.journal_url,
+                        logged_in=authenticated_userid(self.request),
             )
 
+    @view_config(route_name='post_delete',
+                 permission='edit',
+    )
+    def delete(self):
+        """Delete post and redirect to journal."""
+
+        DBSession.delete(self._get_post())
+        self.request.session.flash(('danger', 'Deleted.'))
+        return HTTPFound(location=self.journal_url)
+
     @view_config(route_name='post_add',
-                 renderer='okarchive:templates/post_edit.pt')
+                 renderer='okarchive:templates/post_edit.pt',
+                 permission='edit',
+    )
     def add(self):
         """Show edit form for adding or add from form."""
 
@@ -101,8 +125,9 @@ class PostView(object):
                             registry=form.get_widget_resources(),
                             post=post,
                             journal_url=self.journal_url,
+                            logged_in=authenticated_userid(self.request),
                 )
-            # the form submission succeeded, we have the data
+                # the form submission succeeded, we have the data
             post = Post(title=appstruct['title'],
                         text=appstruct['text'],
                         journal_name=self.request.matchdict['journal_name'])
@@ -115,4 +140,5 @@ class PostView(object):
                         registry=form.get_widget_resources(),
                         post=post,
                         journal_url=self.journal_url,
+                        logged_in=authenticated_userid(self.request),
             )

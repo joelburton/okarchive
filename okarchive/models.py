@@ -28,6 +28,22 @@ from sqlalchemy.orm import (
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import deform
+import colander
+
+from pyramid.security import (
+    Allow,
+    Everyone,
+    )
+
+
+class RootFactory:
+    __acl__ = [(Allow, Everyone, 'view'),
+               (Allow, 'group:editors', 'edit')]
+
+    def __init__(self, request):
+        pass
+
+
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -52,13 +68,19 @@ class Post(Base):
                                              onupdate='CASCADE'), nullable=False)
     title = Column(String,
                    nullable=False,
-                   default='',
-                   info={'colanderalchemy': {'title': 'Title'}},
+                   info={'colanderalchemy': {'title': 'Title',
+                                             'default': '',
+                                             'validator': colander.Length(1,50),
+                                             'widget': deform.widget.TextInputWidget(
+                                                 # "size" param should work, but doesn't
+                                                 style='width:30em'
+                                             )
+                   }},
     )
     text = Column(Text,
-                  default='',
                   info={'colanderalchemy': {'widget': deform.widget.RichTextWidget(),
-                                            'title': 'Body Text'}},
+                                            'title': 'Body Text',
+                                            'default': ''}},
     )
     creation_date = Column(DateTime,
                            server_default=func.now(),
