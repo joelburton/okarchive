@@ -19,6 +19,7 @@
   <script src="/static/assets/js/respond.min.js"></script>
 <![endif]-->
 
+<script src="/static/assets/js/jquery.js"></script>
 </head>
 
 <body>
@@ -62,7 +63,6 @@
 
 </div>
 
-<script src="/static/assets/js/jquery.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 
 <script>

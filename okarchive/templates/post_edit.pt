@@ -6,7 +6,6 @@
 <p>Back to <a href="${journal_url}">${post.journal_name}</a></p>
 
 <link rel="stylesheet" href="/deform/css/form.css"/>
-<script src="/deform/scripts/jquery-2.0.3.min.js"></script>
 
 <link tal:repeat="css registry['css']"
     rel="stylesheet"
