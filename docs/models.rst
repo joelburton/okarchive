@@ -1,7 +1,8 @@
 Models
 ======
 
-I love :py:class:`zipfile.ZipFile` and raising :py:class:`pyramid.httpexceptions.HTTPFound`.
+I love :py:class:`zipfile.ZipFile` and raising
+:py:class:`pyramid.httpexceptions.HTTPFound`.
 
 .. automodule:: okarchive.models
    :members:

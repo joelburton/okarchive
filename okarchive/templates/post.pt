@@ -1,70 +1,71 @@
 <metal:macro use-macro="load:main.pt">
-    <metal:content fill-slot="content">
+<metal:content fill-slot="content">
 
-        <ol class="breadcrumb">
-            <li><a href="#">Home</a></li>
-            <li><a href="${journal_url}">${post.journal_name}</a></li>
-            <li class="active">Data</li>
-        </ol>
+<ol class="breadcrumb">
+  <li><a href="#">Home</a></li>
+  <li><a href="${journal_url}">${post.journal_name}</a></li>
+  <li class="active">Data</li>
+</ol>
 
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <h1>${post.title}</h1>
+<div class="panel panel-default">
 
-                <p class="lead">Why do we love posts so much?</p>
+  <div class="panel-body">
+    <h1>${post.title}</h1>
+    <p class="lead">Why do we love posts so much?</p>
+    <div tal:content="structure post.text">[text]</div>
+  </div>
 
-                <div tal:content="structure post.text">[text]</div>
-            </div>
-            <div class="panel-footer">
+  <div class="panel-footer">
+    <div class="row">
 
-                <div class="row">
+      <div class="col-md-8 text-info">
+        <small tal:define="fmt string:%B %e, %Y at %-I:%M %p">
+          Posted at ${post.creation_date.strftime(fmt)}.
+          <br/>
+          Last modified at ${post.creation_date.strftime(fmt)}.
+        </small>
+      </div>
 
-                    <div class="col-md-8 text-info">
-                        <small>
-                            Posted at ${post.creation_date.strftime('%B %e, %Y at %-I:%M %p')}.<br/>
-                            Last modified at ${post.creation_date.strftime('%B %e, %Y at %-I:%M %p')}.
-                        </small>
+      <div class="col-md-4 text-right">
+        <a class="btn btn-default btn-sm" href="${edit_url}">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Edit
+        </a>
+        <a class="btn btn-danger btn-sm" data-toggle="modal" href="#myModal">
+          <span class="glyphicon glyphicon-trash"></span>
+          Delete
+        </a>
+      </div>
 
-                    </div>
+    </div>
+  </div>
 
-                    <div class="col-md-4 text-right">
-                        <a class="btn btn-default btn-sm" href="${edit_url}">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                            Edit</a>
-                        <a class="btn btn-danger btn-sm" data-toggle="modal" href="#myModal">
-                            <span class="glyphicon glyphicon-trash"></span>
-                            Delete</a>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+</div>
 
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+     data-backdrop="false" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Delete post?</h4></div>
+      <div class="modal-body">
+        This will delete your post. This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="${post.id}/delete">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-danger">
+            <span class="glyphicon glyphicon-trash"></span>
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" data-backdrop="false"
-             aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Delete post?</h4>
-                    </div>
-                    <div class="modal-body">
-                        This will delete your post. This action cannot be undone.
-                    </div>
-                    <div class="modal-footer">
-                        <form method="POST" action="${post.id}/delete">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel
-                        </button>
-                        <button type="submit" class="btn btn-danger">
-                            <span class="glyphicon glyphicon-trash"></span> Delete
-                        </button>
-                            </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </metal:content>
+</metal:content>
 </metal:macro>

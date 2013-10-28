@@ -1,16 +1,20 @@
 <metal:macro use-macro="load:main.pt">
-    <metal:content fill-slot="content">
+<metal:content fill-slot="content">
 
-        <h1 tal:content="journal_name">[journal name]</h1>
-        <ul>
-            <li tal:repeat="post posts">
-                <a href="${request.route_url('post',
-                        journal_name=post.journal_name,
-                        post_id=post.id)}">
-                        ${post.title}</a>
-            </li>
-        </ul>
-        <p><a class="btn btn-primary" href="${add_url}">Add post</a></p>
+<h1>${journal_name}</h1>
 
-    </metal:content>
+<ul>
+  <li tal:repeat="post posts">
+    <a href="${request.route_url(
+            'post',
+            journal_name=post.journal_name,
+            post_id=post.id)}">
+      ${post.title}
+    </a>
+  </li>
+</ul>
+
+<p><a class="btn btn-primary" href="${add_url}">Add post</a></p>
+
+</metal:content>
 </metal:macro>

@@ -1,17 +1,19 @@
 <metal:macro use-macro="load:main.pt">
-    <metal:content fill-slot="content">
+<metal:content fill-slot="content">
 
-        <h1>${post.title}</h1>
+<h1>${post.title}</h1>
 
-        <p>Back to <a href="${journal_url}">${post.journal_name}</a></p>
+<p>Back to <a href="${journal_url}">${post.journal_name}</a></p>
 
-        <link rel="stylesheet" href="/deform/css/form.css"/>
-        <script src="/deform/scripts/jquery-2.0.3.min.js"></script>
+<link rel="stylesheet" href="/deform/css/form.css"/>
+<script src="/deform/scripts/jquery-2.0.3.min.js"></script>
 
-        <link tal:repeat="css registry['css']" rel="stylesheet" href="${req.static_url(css)}"/>
-        <script tal:repeat="js registry['js']" src="${req.static_url(js)}"></script>
+<link tal:repeat="css registry['css']"
+    rel="stylesheet"
+    href="${req.static_url(css)}"/>
+<script tal:repeat="js registry['js']" src="${req.static_url(js)}"></script>
 
-        <div tal:replace="structure form"></div>
+<div tal:replace="structure form"></div>
 
-    </metal:content>
+</metal:content>
 </metal:macro>

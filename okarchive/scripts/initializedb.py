@@ -1,7 +1,7 @@
 import os
 import sys
-import transaction
 
+import transaction
 from sqlalchemy import engine_from_config
 
 from pyramid.paster import (
@@ -13,7 +13,7 @@ from ..models import (
     DBSession,
     Base,
     Journal,
-    Post
+    Post,
     )
 
 
@@ -25,14 +25,17 @@ def usage(argv): #pragma NOCOVER
 
 
 def main(argv=sys.argv): #pragma NOCOVER
+
     if len(argv) != 2:
         usage(argv)
+
     config_uri = argv[1]
     setup_logging(config_uri)
     settings = get_appsettings(config_uri)
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
+
     with transaction.manager:
         journal = Journal(name='distractionbike')
         DBSession.add(journal)

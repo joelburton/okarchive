@@ -1,74 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="/static/assets/ico/favicon.png">
 
-    <title>OkArchive</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="shortcut icon" href="/static/assets/ico/favicon.png">
 
-    <!-- Bootstrap core CSS -->
-    <link href="/static/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/css/okarchive.css" rel="stylesheet">
+<title>OkArchive</title>
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="/static/assets/js/html5shiv.js"></script>
-      <script src="/static/assets/js/respond.min.js"></script>
-    <![endif]-->
+<link href="/static/css/bootstrap.css" rel="stylesheet">
+<link href="/static/css/okarchive.css" rel="stylesheet">
+
+<!-- HTML5 shim & Respond.js IE8 support of HTML5 elements & media queries -->
+<!--[if lt IE 9]>
+  <script src="/static/assets/js/html5shiv.js"></script>
+  <script src="/static/assets/js/respond.min.js"></script>
+<![endif]-->
+
 </head>
 
 <body>
 
 <div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse"
-                    data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">OkArchive</a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-        <!--/.nav-collapse -->
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse"
+              data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">OkArchive</a>
     </div>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div class="container">
-    <div tal:repeat="(css, msg) request.session.pop_flash()"
-            class="alert alert-${css}">${msg}
-    </div>
 
-    <metal:content define-slot="content">
-    </metal:content>
+  <div tal:repeat="(css, msg) request.session.pop_flash()"
+      class="alert alert-${css}">
+    ${msg}
+  </div>
 
-    <hr/>
-    <span tal:condition="logged_in">
-   <a href="${request.application_url}/logout">Logout</a>
-</span>
+  <metal:content define-slot="content">
+  </metal:content>
+
+  <hr/>
+
+  <span tal:condition="logged_in">
+    <a href="${request.application_url}/logout">Logout</a>
+  </span>
 
 </div>
-<!-- /.container -->
 
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
 <script src="/static/assets/js/jquery.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 
-<script type="text/javascript">
-    deform.load()
+<script>
+  deform.load()
 </script>
 
 </body>
