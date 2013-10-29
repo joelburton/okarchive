@@ -44,5 +44,8 @@ def main(argv=sys.argv): #pragma NOCOVER
         DBSession.add(user)
         journal = Journal(name='distractionbike')
         DBSession.add(journal)
-        post = Post(journal_name='distractionbike', title='First Post')
+        post = Post(journal_name='distractionbike',
+                    title='First Post',
+                    lede='Why do we love first posts so much?',
+                    text='This is the <i>very first post</i>.')
         DBSession.add(post)

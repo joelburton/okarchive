@@ -48,6 +48,7 @@ def _initTestingDB():
         post = Post(
             journal_name='distractionbike',
             title='First Post',
+            lede='First lede',
             text='<b>My body</b>')
         DBSession.add(post)
         DBSession.flush()
@@ -83,6 +84,7 @@ class TestModel(unittest.TestCase):
                 .one())
         self.assertEqual(post.journal_name, 'distractionbike')
         self.assertEqual(post.title, 'First Post')
+        self.assertEqual(post.lede, 'First lede')
         self.assertEqual(post.journal.name, 'distractionbike')
         self.assertEqual(len(post.comments), 1)
 
@@ -202,7 +204,10 @@ class TestPostAdd(unittest.TestCase):
         from .models import Post
 
         request = testing.DummyRequest(
-            post={'add': 1, 'title': 'Yo', 'text': 'There'})
+            post={'add': 1,
+                  'title': 'Yo',
+                  'lede': 'lede',
+                  'text': 'There'})
         request.matchdict['journal_name'] = 'distractionbike'
         view = PostView(resource, request)
         info = view.add()
@@ -215,6 +220,7 @@ class TestPostAdd(unittest.TestCase):
                 .filter(Post.id == 2)
                 .one())
         self.assertEqual(post.title, 'Yo')
+        self.assertEqual(post.lede, 'lede')
         self.assertEqual(post.text, 'There')
 
 
@@ -246,7 +252,10 @@ class TestPostEdit(unittest.TestCase):
         from .models import Post
 
         request = testing.DummyRequest(
-            post={'edit': 1, 'title': 'Yo', 'text': 'There'})
+            post={'edit': 1,
+                  'title': 'Yo',
+                  'lede': 'lede',
+                  'text': 'There'})
         request.matchdict['journal_name'] = 'distractionbike'
         request.matchdict['post_id'] = 1
         view = PostView(resource, request)
@@ -260,6 +269,7 @@ class TestPostEdit(unittest.TestCase):
                 .filter(Post.id == 1)
                 .one())
         self.assertEqual(post.title, 'Yo')
+        self.assertEqual(post.lede, 'lede')
         self.assertEqual(post.text, 'There')
 
 
@@ -393,14 +403,16 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('/journals/distractionbike')
         res2 = res.click('Add post')
         self.assertSequenceEqual(res2.status, '200 OK')
-        self.assertIn('<h1>Title</h1>', res2)
+        self.assertIn('<h1>Add Post</h1>', res2)
 
         form = res2.forms['add-post']
         # Do not fill in a title; this will cause validation error
+        form['lede'] = 'New lede'
         form['text'] = '<b>My post</b>'
         res3 = form.submit('add')
 
         self.assertIn('There was a problem with your submission', res3)
+        self.assertIn('New lede', res3)
         self.assertIn('<b>My post</b>', res3)
 
     def test_add_post_ok(self):
@@ -408,14 +420,16 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('/journals/distractionbike')
         res2 = res.click('Add post')
         self.assertSequenceEqual(res2.status, '200 OK')
-        self.assertIn('<h1>Title</h1>', res2)
+        self.assertIn('<h1>Add Post</h1>', res2)
 
         form = res2.forms['add-post']
         form['title'] = 'My Title'
+        form['lede'] = 'New lede'
         form['text'] = '<b>My post</b>'
         res3 = form.submit('add').follow()
 
         self.assertIn('<h1>My Title</h1>', res3)
+        self.assertIn('New lede', res3)
         self.assertIn('<b>My post</b>', res3)
 
     def test_edit_post_bad_validation(self):
@@ -423,7 +437,7 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('/journals/distractionbike/1')
         res2 = res.click('Edit')
         self.assertSequenceEqual(res2.status, '200 OK')
-        self.assertIn('<h1>First Post</h1>', res2)
+        self.assertIn('<h1>Edit Post</h1>', res2)
 
         form = res2.forms['edit-post']
         # Clear title; this will cause validation error
@@ -432,6 +446,7 @@ class FunctionalTests(unittest.TestCase):
         res3 = form.submit('edit')
 
         self.assertIn('There was a problem with your submission', res3)
+        self.assertIn('First lede', res3)
         self.assertIn('<b>My 2nd body</b>', res3)
 
     def test_edit_post_ok(self):
@@ -439,13 +454,15 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('/journals/distractionbike/1')
         res2 = res.click('Edit')
         self.assertSequenceEqual(res2.status, '200 OK')
-        self.assertIn('<h1>First Post</h1>', res2)
+        self.assertIn('<h1>Edit Post</h1>', res2)
 
         form = res2.forms['edit-post']
         form['title'] = 'My 2nd Post'
+        form['lede'] = '2nd lede'
         form['text'] = '<b>My 2nd body</b>'
         res3 = form.submit('edit').follow()
 
         self.assertIn('<h1>My 2nd Post</h1>', res3)
+        self.assertIn('2nd lede', res3)
         self.assertIn('<b>My 2nd body</b>', res3)
 

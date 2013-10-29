@@ -110,6 +110,16 @@ class Post(Base):
                        widget=deform.widget.TextInputWidget(),
                   )},
     )
+    lede = Column(
+        Text,
+        nullable=True,
+        info={'colanderalchemy':
+                  dict(title='Lead In',
+                       default='',
+                       validator=colander.Length(0,200),
+                       widget=deform.widget.TextAreaWidget(),
+                    )}
+    )
     text = Column(
         Text,
         info={'colanderalchemy':

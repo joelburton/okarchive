@@ -22,7 +22,7 @@ class PostView:
 
     schema = colanderalchemy.SQLAlchemySchemaNode(
         Post,
-        includes=['title', 'text'],
+        includes=['title', 'lede', 'text'],
         title='Journal Post',
     )
 
@@ -112,13 +112,16 @@ class PostView:
                 )
             post.title = appstruct['title']
             post.text = appstruct['text']
+            post.lede = appstruct['lede']
             req.session.flash(('success', 'Edited.'))
             return self._redirect_to_post_view(post)
         elif 'cancel' in req.POST:
             req.session.flash(('info', 'Cancelled.'))
             return self._redirect_to_post_view(post)
         else:
-            appstruct = {'title': post.title, 'text': post.text}
+            appstruct = {'title': post.title,
+                         'text': post.text,
+                         'lede': post.lede}
             return dict(form=form.render(appstruct),
                         registry=form.get_widget_resources(),
                         post=post,
@@ -165,6 +168,7 @@ class PostView:
                 # the form submission succeeded, we have the data
             post = Post(title=appstruct['title'],
                         text=appstruct['text'],
+                        lede=appstruct['lede'],
                         journal_name=req.matchdict['journal_name'])
             DBSession.add(post)
             DBSession.flush()     # make post.id available to us

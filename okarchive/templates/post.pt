@@ -11,7 +11,7 @@
 
   <div class="panel-body">
     <h1>${post.title}</h1>
-    <p class="lead">Why do we love posts so much?</p>
+    <p class="lead">${post.lede}</p>
     <div tal:content="structure post.text">[text]</div>
   </div>
 
