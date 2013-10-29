@@ -5,6 +5,8 @@ These classes are for the journals, posts, and comments on the posts.
 They will be persisted in SQLAlchemy.
 """
 
+import hashlib
+
 from sqlalchemy import (
     Column,
     Index,
@@ -46,6 +48,27 @@ class RootFactory:
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
+
+
+class User(Base):
+    """System user."""
+
+    __tablename__ = 'users'
+
+    name = Column(
+        String,
+        primary_key=True,
+    )
+    password_md5 = Column(
+        String,
+        nullable=False,
+    )
+
+    def verifyPassword(self, password):
+        """Verify password."""
+
+        md5 = hashlib.md5(password.encode()).hexdigest()
+        return md5 == self.password_md5
 
 
 class Journal(Base):

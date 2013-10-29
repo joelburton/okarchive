@@ -1,5 +1,6 @@
 import os
 import sys
+import hashlib
 
 import transaction
 from sqlalchemy import engine_from_config
@@ -14,6 +15,7 @@ from ..models import (
     Base,
     Journal,
     Post,
+    User,
     )
 
 
@@ -37,6 +39,9 @@ def main(argv=sys.argv): #pragma NOCOVER
     Base.metadata.create_all(engine)
 
     with transaction.manager:
+        password = hashlib.md5('secret'.encode()).hexdigest()
+        user = User(name='distractionbike', password_md5=password)
+        DBSession.add(user)
         journal = Journal(name='distractionbike')
         DBSession.add(journal)
         post = Post(journal_name='distractionbike', title='First Post')
