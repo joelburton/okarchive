@@ -8,7 +8,6 @@ from pyramid.security import (
 from pyramid.httpexceptions import HTTPFound
 
 from ..models import (
-    DBSession,
     Post,
     Journal,
     )
@@ -68,12 +67,12 @@ class JournalView:
                             logged_in=authenticated_userid(req),
                 )
                 # the form submission succeeded, we have the data
-            post = Post(title=appstruct['title'],
-                        text=appstruct['text'],
-                        lede=appstruct['lede'],
-                        journal_name=journal.name)
-            DBSession.add(post)
-            DBSession.flush()     # make post.id available to us
+            post = journal.add_post(
+                             title=appstruct['title'],
+                             text=appstruct['text'],
+                             lede=appstruct['lede'],
+                             _flush=True    # make post.id available to us
+                             )
             return HTTPFound(location=req.resource_url(post))
 
         else:

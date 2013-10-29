@@ -94,6 +94,31 @@ class Journals:
             raise KeyError('No such journal: {}'.format(item))
         return journal
 
+    def __setitem__(self, key, value):
+        """Add a journal."""
+
+        raise NotImplementedError("Can't add journal")
+
+    def __delitem__(self, key):
+        """Delete a journal."""
+
+        raise NotImplementedError("Can't delete journal")
+
+    def values(self):
+        """List of journals."""
+
+        return [j for j in self.journals]
+
+    def keys(self):
+        """List of journal names."""
+
+        return [ j.name for j in self.journals ]
+
+    def items(self):
+        """List of (journal-name, journal) tuples."""
+
+        return [(j.name, j) for j in self.journals ]
+
     @property
     def journals(self):
         """Return list of journals."""
@@ -127,20 +152,68 @@ class Journal(Base):
     def __getitem__(self, item):
         """Get post by id."""
 
-        post_id = str(item)
         post = (DBSession
                 .query(Post)
-                .filter(Post.id == post_id)
+                .filter(Post.id == item)
                 .filter(Post.journal_name == self.name)
                 .first())
         if not post:
             raise KeyError('No such post: {}'.format(item))
         return post
 
+    def __setitem__(self, key, post):
+        """Set post in journal.
+
+        This should be uncommonly called; normally call add_post, since
+        that doesn't require that we know the post id in advance--they're
+        auto-incremented by the database. This might be useful if we need
+        to replace a post with a new one with a pre-used number.
+        """
+
+        if post.journal_name != self.name:
+            raise ValueError('Post journal.name does not match journal: {}, {}'
+                    .format(post.journal_name, self.name))
+        self.posts.append(post)
+        DBSession.flush()    # we'll want the auto-inc'd post ID
+
+    def __delitem__(self, key):
+        """Delete post."""
+
+        self.posts.remove(self[key])
+
     name = Column(
         String,
         primary_key=True,
     )
+
+    def add_post(self,
+                 post=None,
+                 _flush=False,
+                 **kw
+                 ):
+        if not post:
+            post = Post(journal_name=self.name, **kw)
+        else:
+            post.journal_name = self.name
+        DBSession.add(post)
+        if _flush:
+            DBSession.flush()
+        return post
+
+    def values(self):
+        """List of posts."""
+
+        return [p for p in self.posts]
+
+    def keys(self):
+        """List of post IDs."""
+
+        return [p.id for p in self.posts]
+
+    def items(self):
+        """List of (journal-name, journal) tuples."""
+
+        return [(p.id, p) for p in self.posts]
 
 
 class Post(Base):
@@ -219,6 +292,10 @@ class Post(Base):
                         passive_deletes=True),
     )
 
+    def delete(self):
+        """Delete post."""
+
+        DBSession.delete(self)
 
 Index('post_journalname', Post.journal_name)
 Index('post_title', Post.title)

@@ -9,7 +9,6 @@ from pyramid.security import (
 )
 
 from ..models import (
-    DBSession,
     Post,
     )
 
@@ -115,7 +114,7 @@ class PostView:
     def delete(self):
         """Delete post and redirect to journal."""
 
-        DBSession.delete(self.resource)
+        self.resource.delete()
         self.request.session.flash(('danger', 'Deleted.'))
         return HTTPFound(location=self.journal_url)
 

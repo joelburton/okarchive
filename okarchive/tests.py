@@ -66,11 +66,27 @@ class TestModel(unittest.TestCase):
         DBSession.remove()
 
     def test_journals(self):
-        from .models import Journals
+        from .models import Journals, Journal
         journals = Journals()
 
+        db = (DBSession.query(Journal).one())
         self.assertEqual(journals['distractionbike'].name, 'distractionbike')
-        self.assertRaises(KeyError, journals.__getitem__, 'nosuch')
+        self.assertEqual(journals['distractionbike'], db)
+        self.assertSequenceEqual([j for j in journals.journals], [db])
+        self.assertSequenceEqual(journals.keys(), ['distractionbike'])
+        self.assertSequenceEqual(journals.values(), [db])
+        self.assertSequenceEqual(journals.items(), [('distractionbike',db)])
+
+        self.assertRaises(KeyError, lambda: journals['nosuch'])
+
+        def _delete(key):
+            del journals[key]
+        self.assertRaises(NotImplementedError, lambda: _delete('somekey'))
+
+        def _add(key):
+            journals[key] = None
+        self.assertRaises(NotImplementedError, lambda: _add('somekey'))
+
 
     def test_journal(self):
         from .models import Journal
@@ -82,18 +98,69 @@ class TestModel(unittest.TestCase):
         self.assertEqual(journal.name, 'distractionbike')
         self.assertEqual(len(journal.posts), 1)
 
-    def test_posts(self):
-        from .models import Post
+    def test_journal_posts(self):
+        from .models import Journal, Post
 
-        post = (DBSession
+        journal = (DBSession
+                   .query(Journal)
+                   .filter(Journal.name == 'distractionbike')
+                   .one())
+        post1 = (DBSession
                 .query(Post)
-                .filter(Post.id == 1)
                 .one())
-        self.assertEqual(post.journal_name, 'distractionbike')
-        self.assertEqual(post.title, 'First Post')
-        self.assertEqual(post.lede, 'First lede')
-        self.assertEqual(post.journal.name, 'distractionbike')
-        self.assertEqual(len(post.comments), 1)
+
+        self.assertSequenceEqual(journal.keys(), [1])
+        self.assertSequenceEqual(journal.values(), [post1])
+        self.assertSequenceEqual(journal.items(), [(1, post1)])
+
+        del journal[1]
+        self.assertSequenceEqual(journal.keys(), [])
+        self.assertSequenceEqual(list(DBSession.query(Post)), [])
+
+        post2 = Post(title='test', journal_name=journal.name)
+        journal[1] = post2
+        self.assertSequenceEqual(journal.keys(), [1])
+        self.assertSequenceEqual(list(DBSession.query(Post)), [post2])
+
+        # Test adding a post with mismatch
+        post2 = Post(title='test', journal_name='x')
+        def _set(id, post):
+            journal[id] = post
+        self.assertRaises(ValueError, _set, 1, post2)
+
+    def test_journal_add_post_by_attributes(self):
+        from .models import Journal
+
+        journal = (DBSession
+                   .query(Journal)
+                   .filter(Journal.name == 'distractionbike')
+                   .one())
+        journal.add_post(title='Foo', _flush=True)
+        self.assertEquals(len(journal.posts), 2)
+
+    def test_journal_add_post_by_object(self):
+        from .models import Journal, Post
+
+        journal = (DBSession
+                   .query(Journal)
+                   .filter(Journal.name == 'distractionbike')
+                   .one())
+        post = Post(title='Foo')
+        journal.add_post(post)
+        self.assertEquals(len(journal.posts), 2)
+
+    def test_posts(self):
+            from .models import Post
+
+            post = (DBSession
+                    .query(Post)
+                    .filter(Post.id == 1)
+                    .one())
+            self.assertEqual(post.journal_name, 'distractionbike')
+            self.assertEqual(post.title, 'First Post')
+            self.assertEqual(post.lede, 'First lede')
+            self.assertEqual(post.journal.name, 'distractionbike')
+            self.assertEqual(len(post.comments), 1)
 
     def test_comments(self):
         from .models import Comment
