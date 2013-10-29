@@ -123,8 +123,11 @@ class Journals:
     def journals(self):
         """Return list of journals."""
 
+        # XXX: do we need to worry about getting journals without a sort order?
         return (DBSession
-                .query(Journal))
+                .query(Journal)
+                .order_by(Journal.name)
+        )
 
 journals = Journals()
 
