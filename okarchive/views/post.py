@@ -75,7 +75,9 @@ class PostView:
         """Show edit form or update post from edit form."""
 
         req = self.request
-        form = deform.Form(self.schema, buttons=('edit', 'cancel'))
+        form = deform.Form(self.schema,
+                           formid='edit-post',
+                           buttons=('edit', 'cancel'))
         post = self._get_post()
 
         if 'edit' in req.POST:
@@ -125,7 +127,7 @@ class PostView:
         """Show edit form for adding or add from form."""
 
         req = self.request
-        form = deform.Form(self.schema, buttons=('add',))
+        form = deform.Form(self.schema, formid='add-post', buttons=('add',))
         post = Post(title='Title', journal_name=req.matchdict['journal_name'])
 
         if 'add' in req.POST:
