@@ -1,4 +1,65 @@
-0.0
----
+0.1: "Spooky Shit", 29 Oct 2013
+-------------------------------
 
--  Initial version
+Initial proof-of-concept. Has data for journals and posts (comments not yet
+implemented except in model). Can traverse to objects and use web to add,
+edit, and delete posts, and view journals/posts.
+
+    Joel Burton (54):
+          Initial import from Pyramid scaffold.
+          Add .gitignore for database.
+          Add coverage to gitignore.
+          Add journal/post as models and update tests.
+          Add view for journal. Add route for journal-view.
+              Add page template for journal-view.
+          Remove scaffold assets.
+          Add psycopg2 as requirement for deployment DB.
+          Add rudimentary edit form for posts.
+          Make crude edit form able to save.
+          Add post-add form and view.
+          Fixed URLs and make posts links on journal view.
+          Fixed typo in host preventing production.ini from being usable.
+          Refactored journal_view into class-based view.
+          Refactored views.py into views package.
+          Added egg-info to .gitignore
+          Added comment class to model.
+          Added model tests.
+          Added project credit/readme.
+          Added getting started to README.
+          Factored out main template.
+          © symbol in READ?ME kills PyCharm's running of setup.py
+          Add pragmas for initialize remaining untested.
+          Add initial CSS.
+          Add initial docstrings.
+          Add sphinx project as docs.
+          Add [docs] and [testing] subsets to egg.
+          Switch post add/edit views to using deform.
+          Generate schema using colanderalchemy.
+          Add security.
+          Add bootstrap.
+          Lots of code cleanup for 80 columns and more understandable idioms.
+          Remove jQuery include from form; now brought in as part of
+              bootstrap.
+          Create users table and use it for authentication.
+          Add home page.
+          Add tests for add-post, edit-post.
+          Refactored login and logout views into view class.
+          UX improvements to login/logout.
+          Add add/delete security and have UI reflect security.
+          Update tests for add/edit/delete permissions.
+          Add text for no-posts-in-journal.
+          Change title on add-post/edit-post form.
+          Add lede field to posts.
+          Add second user.
+          Added basic support for traversable content objects.
+          Update views to use traversable resources.
+          Complete initial move to traversal.
+          Add test coverage for post-delete and post-edit-cancel.
+          Iterate over journals object to get list of journals.
+          Fix bug in journal listing page; was producing wrong URL for
+              journals.
+          Make model changes through models. not session directly.
+          Use existing reference to find journal from post.
+          Remove no-longer-used route information.
+          Add ordering for journals.
+          Removed routes cruft from tests.
