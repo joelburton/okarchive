@@ -13,6 +13,7 @@ from pyramid.security import (
 
 from ..models import (
     DBSession,
+    Journal,
     Post,
     )
 
@@ -29,51 +30,31 @@ class PostView:
     def __init__(self, resource, request):
         self.resource = resource
         self.request = request
-        self.journal_name = request.matchdict['journal_name']
-        self.journal_url = request.route_url(
-            'journal', journal_name=self.journal_name)
-
-    def _get_post(self):
-        post_id = self.request.matchdict['post_id']
-        post = (DBSession
-                .query(Post)
-                .filter(Post.journal_name == self.journal_name)
-                .filter(Post.id == post_id)
-                .first())
-        if not post:
-            raise HTTPNotFound(
-                'No such journal or post: %s, %s.'
-                % (self.journal_name, post_id))
-        return post
+        self.journal_name = resource.journal_name
+        self.journal_url = request.resource_url(resource.__parent__)
 
     def _redirect_to_post_view(self, post):
-        return HTTPFound(
-            location=self.request.route_url('post',
-                                            journal_name=post.journal_name,
-                                            post_id=post.id))
+        return HTTPFound(location=self.request.resource_url(post))
 
 
-    @view_config(route_name='post',
+    @view_config(name='',
+                 context=Post,
                  renderer='okarchive:templates/post.pt',
                  permission='view',
     )
     def view(self):
         """Show a single post."""
 
-        post = self._get_post()
+        post = self.resource
         req = self.request
 
-        if has_permission('edit', self.resource, req):
-            edit_url = req.route_url('post_edit',
-                                    journal_name=self.journal_name,
-                                    post_id=post.id)
+        if has_permission('edit', post, req):
+            edit_url = req.resource_url(post, 'edit')
         else:
             edit_url = None
 
-        if has_permission('delete', self.resource, req):
-            delete_url = req.route_url('post_delete',
-                                     journal_name=self.journal_name,
-                                     post_id=post.id)
+        if has_permission('delete', post, req):
+            delete_url = req.resource_url(post, 'delete')
         else:
             delete_url = None
 
@@ -85,7 +66,8 @@ class PostView:
         )
 
 
-    @view_config(route_name='post_edit',
+    @view_config(name='edit',
+                 context=Post,
                  renderer='okarchive:templates/post_edit.pt',
                  permission='edit',
     )
@@ -96,7 +78,7 @@ class PostView:
         form = deform.Form(self.schema,
                            formid='edit-post',
                            buttons=('edit', 'cancel'))
-        post = self._get_post()
+        post = self.resource
 
         if 'edit' in req.POST:
             controls = req.POST.items() # get the form controls
@@ -131,21 +113,24 @@ class PostView:
             )
 
 
-    @view_config(route_name='post_delete',
+    @view_config(name='delete',
+                 context=Post,
                  permission='delete',
     )
     def delete(self):
         """Delete post and redirect to journal."""
 
-        DBSession.delete(self._get_post())
+        DBSession.delete(self.resource)
         self.request.session.flash(('danger', 'Deleted.'))
         return HTTPFound(location=self.journal_url)
 
 
-    @view_config(route_name='post_add',
+    @view_config(name='add',
+                 context=Journal,
                  renderer='okarchive:templates/post_edit.pt',
                  permission='add',
     )
+    # FIXME: move this to journal view
     def add(self):
         """Show edit form for adding or add from form."""
 

@@ -1,13 +1,15 @@
 from pyramid.view import view_config
 from pyramid.security import authenticated_userid
 
-from ..models import SiteRoot
+from ..models import Journals
 
-@view_config(renderer='okarchive:templates/home.pt',
-             context=SiteRoot,
+
+@view_config(name='',
+             renderer='okarchive:templates/journals.pt',
+             context=Journals,
              permission='view')
-class HomeView(object):
-    """Home page."""
+class JournalsView(object):
+    """List of journals page."""
 
     def __init__(self, request):
         self.request = request

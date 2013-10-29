@@ -62,21 +62,14 @@ class User(Base):
         return md5 == self.password_md5
 
 
-class RootFactory:
-    __acl__ = [(Allow, Everyone, 'view'),
-               (Allow, 'group:editors', ('edit', 'add', 'delete')),
-    ]
-
-    def __init__(self, request):
-        pass
-
-    def __call__(self):
-        return siteRoot
+def RootFactory(request):
+    return siteRoot
 
 
 class SiteRoot:
     __name__ = ''
     __parent__ = None
+    __acl__ = [(Allow, Everyone, 'view')]
 
     def __getitem__(self, item):
         return {'journals': journals}[item]
@@ -115,6 +108,7 @@ class Journal(Base):
 
     __parent__ = journals
 
+    @property
     def __acl__(self):
         """Permisssions."""
 
@@ -158,6 +152,7 @@ class Post(Base):
                 .filter(Journal.name == self.journal_name)
                 .first())
 
+    @property
     def __acl__(self):
         """Permissions."""
 

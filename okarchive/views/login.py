@@ -11,6 +11,7 @@ from pyramid.security import (
 from pyramid.httpexceptions import HTTPFound
 
 from ..security import authenticate
+from ..models import SiteRoot
 
 class LoginLogoutView:
     """Login and logout."""
@@ -18,7 +19,8 @@ class LoginLogoutView:
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='login',
+    @view_config(name='login',
+                 context=SiteRoot,
                  renderer='okarchive:templates/login.pt')
     @forbidden_view_config(renderer='okarchive:templates/login.pt')
     def login(self):
@@ -51,7 +53,8 @@ class LoginLogoutView:
         )
 
 
-    @view_config(route_name='logout')
+    @view_config(name='logout',
+                 context=SiteRoot)
     def logout(self):
         """Logout and return to home page."""
 

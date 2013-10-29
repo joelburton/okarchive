@@ -5,10 +5,7 @@
 
 <ul tal:condition="posts">
   <li tal:repeat="post posts">
-    <a href="${request.route_url(
-            'post',
-            journal_name=post.journal_name,
-            post_id=post.id)}">
+    <a href="${request.resource_url(post)}">
       ${post.title}
     </a>
   </li>
