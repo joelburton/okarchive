@@ -1,0 +1,11 @@
+<metal:macro use-macro="load:main.pt">
+<metal:content fill-slot="content">
+
+<h1>Home</h1>
+
+<ul>
+  <li><a href="/journals/distractionbike">distractionbike</a></li>
+</ul>
+
+</metal:content>
+</metal:macro>

@@ -21,6 +21,7 @@ _routes = [
     ('post_add',    '/journals/{journal_name}/add'),
     ('login',       '/login'),
     ('logout',      '/logout'),
+    ('home',        ''),
 ]
 
 
