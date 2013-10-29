@@ -6,7 +6,10 @@ from pyramid.httpexceptions import (
     HTTPFound,
     HTTPNotFound,
     )
-from pyramid.security import authenticated_userid
+from pyramid.security import (
+    authenticated_userid,
+    has_permission,
+)
 
 from ..models import (
     DBSession,
@@ -23,7 +26,8 @@ class PostView:
         title='Journal Post',
     )
 
-    def __init__(self, request):
+    def __init__(self, resource, request):
+        self.resource = resource
         self.request = request
         self.journal_name = request.matchdict['journal_name']
         self.journal_url = request.route_url(
@@ -57,13 +61,27 @@ class PostView:
         """Show a single post."""
 
         post = self._get_post()
+        req = self.request
+
+        if has_permission('edit', self.resource, req):
+            edit_url = req.route_url('post_edit',
+                                    journal_name=self.journal_name,
+                                    post_id=post.id)
+        else:
+            edit_url = None
+
+        if has_permission('delete', self.resource, req):
+            delete_url = req.route_url('post_delete',
+                                     journal_name=self.journal_name,
+                                     post_id=post.id)
+        else:
+            delete_url = None
+
         return dict(post=post,
-                    edit_url=self.request.route_url(
-                        'post_edit',
-                        journal_name=self.journal_name,
-                        post_id=post.id),
+                    edit_url=edit_url,
+                    delete_url=delete_url,
                     journal_url=self.journal_url,
-                    logged_in=authenticated_userid(self.request),
+                    logged_in=authenticated_userid(req),
         )
 
 
@@ -109,7 +127,7 @@ class PostView:
 
 
     @view_config(route_name='post_delete',
-                 permission='edit',
+                 permission='delete',
     )
     def delete(self):
         """Delete post and redirect to journal."""
@@ -121,7 +139,7 @@ class PostView:
 
     @view_config(route_name='post_add',
                  renderer='okarchive:templates/post_edit.pt',
-                 permission='edit',
+                 permission='add',
     )
     def add(self):
         """Show edit form for adding or add from form."""

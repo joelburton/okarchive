@@ -61,6 +61,10 @@
     <a href="${request.application_url}/logout">Sign out</a>
   </span>
 
+  <span tal:condition="not: logged_in|nothing">
+    <a href="${request.application_url}/login">Sign in</a>
+  </span>
+
 </div>
 
 <script src="/static/js/bootstrap.min.js"></script>

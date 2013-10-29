@@ -14,7 +14,9 @@
   </li>
 </ul>
 
-<p><a class="btn btn-primary" href="${add_url}">Add post</a></p>
+<p tal:condition="add_url">
+  <a class="btn btn-primary" href="${add_url}">Add post</a>
+</p>
 
 </metal:content>
 </metal:macro>

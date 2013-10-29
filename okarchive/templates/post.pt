@@ -27,11 +27,13 @@
       </div>
 
       <div class="col-md-4 text-right">
-        <a class="btn btn-default btn-sm" href="${edit_url}">
+        <a tal:condition="edit_url"
+            class="btn btn-default btn-sm" href="${edit_url}">
           <span class="glyphicon glyphicon-pencil"></span>
           Edit
         </a>
-        <a class="btn btn-danger btn-sm" data-toggle="modal" href="#myModal">
+        <a tal:condition="delete_url"
+            class="btn btn-danger btn-sm" data-toggle="modal" href="#myModal">
           <span class="glyphicon glyphicon-trash"></span>
           Delete
         </a>
@@ -53,7 +55,7 @@
         This will delete your post. This action cannot be undone.
       </div>
       <div class="modal-footer">
-        <form method="POST" action="${post.id}/delete">
+        <form method="POST" action="${delete_url}">
           <button type="button" class="btn btn-default" data-dismiss="modal">
             Cancel
           </button>

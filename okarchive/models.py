@@ -40,6 +40,8 @@ from pyramid.security import (
 class RootFactory:
     __acl__ = [(Allow, Everyone, 'view'),
                (Allow, 'group:editors', 'edit'),
+               (Allow, 'group:editors', 'add'),
+               (Allow, 'group:editors', 'delete'),
     ]
 
     def __init__(self, request):
