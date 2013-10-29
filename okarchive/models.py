@@ -227,10 +227,7 @@ class Post(Base):
 
     @property
     def __parent__(self):
-        return (DBSession
-                .query(Journal)
-                .filter(Journal.name == self.journal_name)
-                .first())
+        return self.journal
 
     @property
     def __acl__(self):
