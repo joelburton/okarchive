@@ -124,20 +124,16 @@ class TestJournalView(unittest.TestCase):
         DBSession.remove()
         testing.tearDown()
 
-    def test_404(self):
-        from .views import JournalView
-
-        request = testing.DummyRequest()
-        request.matchdict['journal_name'] = 'mr-nobody'
-        view = JournalView(resource, request)
-        self.assertRaises(HTTPNotFound, view.view)
-
     def test_it(self):
         from .views import JournalView
+        from .models import Journal
+
+        journal = (DBSession
+                   .query(Journal)
+                   .one())
 
         request = testing.DummyRequest()
-        request.matchdict['journal_name'] = 'distractionbike'
-        view = JournalView(resource, request)
+        view = JournalView(journal, request)
         info = view.view()
         self.assertEqual(info['journal_name'], 'distractionbike')
         self.assertEqual(len(info['posts']), 1)
@@ -155,25 +151,18 @@ class TestPostView(unittest.TestCase):
         DBSession.remove()
         testing.tearDown()
 
-    def test_404(self):
-        from .views import PostView
-
-        request = testing.DummyRequest()
-        request.matchdict['journal_name'] = 'mr-nobody'
-        request.matchdict['post_id'] = 99
-        view = PostView(resource, request)
-        self.assertRaises(HTTPNotFound, view.view)
-
     def test_it(self):
         from .views import PostView
+        from .models import Post
 
         request = testing.DummyRequest()
-        request.matchdict['journal_name'] = 'distractionbike'
-        request.matchdict['post_id'] = 1
-        view = PostView(resource, request)
+        post = (DBSession
+                .query(Post)
+                .one())
+        view = PostView(post, request)
         info = view.view()
         self.assertEqual(info['journal_url'],
-                         'http://example.com/journals/distractionbike')
+                         'http://example.com/journals/distractionbike/')
         self.assertEqual(info['edit_url'],
                          'http://example.com/journals/distractionbike/1/edit')
 
@@ -191,29 +180,36 @@ class TestPostAdd(unittest.TestCase):
         testing.tearDown()
 
     def test_form(self):
-        from .views import PostView
+        from .views import JournalView
+        from .models import Journal
 
         request = testing.DummyRequest()
+        journal = (DBSession
+                   .query(Journal)
+                   .one())
         request.matchdict['journal_name'] = 'distractionbike'
-        view = PostView(resource, request)
+        view = JournalView(journal, request)
         info = view.add()
         self.assertEqual(info['post'].title, 'Title')
 
     def test_add(self):
-        from .views import PostView
-        from .models import Post
+        from .views import JournalView
+        from .models import Post, Journal
 
         request = testing.DummyRequest(
             post={'add': 1,
                   'title': 'Yo',
                   'lede': 'lede',
                   'text': 'There'})
+        journal = (DBSession
+                   .query(Journal)
+                   .one())
         request.matchdict['journal_name'] = 'distractionbike'
-        view = PostView(resource, request)
+        view = JournalView(journal, request)
         info = view.add()
         self.assertEqual(info.status, '302 Found')
         self.assertEqual(info.location,
-                         'http://example.com/journals/distractionbike/2')
+                         'http://example.com/journals/distractionbike/2/')
 
         post = (DBSession
                 .query(Post)
@@ -239,11 +235,13 @@ class TestPostEdit(unittest.TestCase):
 
     def test_form(self):
         from .views import PostView
+        from .models import Post
 
         request = testing.DummyRequest()
-        request.matchdict['journal_name'] = 'distractionbike'
-        request.matchdict['post_id'] = 1
-        view = PostView(resource, request)
+        post = (DBSession
+                .query(Post)
+                .one())
+        view = PostView(post, request)
         info = view.edit()
         self.assertEqual(info['post'].title, 'First Post')
 
@@ -256,13 +254,14 @@ class TestPostEdit(unittest.TestCase):
                   'title': 'Yo',
                   'lede': 'lede',
                   'text': 'There'})
-        request.matchdict['journal_name'] = 'distractionbike'
-        request.matchdict['post_id'] = 1
-        view = PostView(resource, request)
+        post = (DBSession
+                .query(Post)
+                .one())
+        view = PostView(post, request)
         info = view.edit()
         self.assertEqual(info.status, '302 Found')
         self.assertEqual(info.location,
-                         'http://example.com/journals/distractionbike/1')
+                         'http://example.com/journals/distractionbike/1/')
 
         post = (DBSession
                 .query(Post)
@@ -326,7 +325,7 @@ class FunctionalTests(unittest.TestCase):
             'href="http://localhost/journals/distractionbike/add">Add post',
             res)
         self.assertIn(
-            '<a href="http://localhost/journals/distractionbike/1">',
+            '<a href="http://localhost/journals/distractionbike/1/">',
             res)
 
     def test_journal_view_auth(self):
@@ -337,7 +336,7 @@ class FunctionalTests(unittest.TestCase):
             'href="http://localhost/journals/distractionbike/add">Add post',
             res)
         self.assertIn(
-            '<a href="http://localhost/journals/distractionbike/1">',
+            '<a href="http://localhost/journals/distractionbike/1/">',
             res)
 
     def test_post_view_unauth(self):
@@ -394,7 +393,7 @@ class FunctionalTests(unittest.TestCase):
         self.assertNotIn('/logout">Logout</a>', res2)
 
     def test_goto_journal(self):
-        res = self.testapp.get('/')
+        res = self.testapp.get('/journals')
         res2 = res.click('distractionbike')
         self.assertIn('<h1>distractionbike</h1>', res2)
 

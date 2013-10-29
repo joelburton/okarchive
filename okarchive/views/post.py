@@ -2,10 +2,7 @@ import deform
 import colanderalchemy
 
 from pyramid.view import view_config
-from pyramid.httpexceptions import (
-    HTTPFound,
-    HTTPNotFound,
-    )
+from pyramid.httpexceptions import HTTPFound
 from pyramid.security import (
     authenticated_userid,
     has_permission,
@@ -13,7 +10,6 @@ from pyramid.security import (
 
 from ..models import (
     DBSession,
-    Journal,
     Post,
     )
 
@@ -30,7 +26,6 @@ class PostView:
     def __init__(self, resource, request):
         self.resource = resource
         self.request = request
-        self.journal_name = resource.journal_name
         self.journal_url = request.resource_url(resource.__parent__)
 
     def _redirect_to_post_view(self, post):
@@ -125,45 +120,3 @@ class PostView:
         return HTTPFound(location=self.journal_url)
 
 
-    @view_config(name='add',
-                 context=Journal,
-                 renderer='okarchive:templates/post_edit.pt',
-                 permission='add',
-    )
-    # FIXME: move this to journal view
-    def add(self):
-        """Show edit form for adding or add from form."""
-
-        req = self.request
-        form = deform.Form(self.schema, formid='add-post', buttons=('add',))
-        post = Post(title='Title', journal_name=req.matchdict['journal_name'])
-
-        if 'add' in req.POST:
-            controls = req.POST.items() # get the form controls
-            try:
-                appstruct = form.validate(controls)  # call validate
-            except deform.ValidationFailure as e: # catch the exception
-                return dict(form=e.render(),
-                            registry=form.get_widget_resources(),
-                            post=post,
-                            journal_url=self.journal_url,
-                            title='Add Post',
-                            logged_in=authenticated_userid(req),
-                )
-                # the form submission succeeded, we have the data
-            post = Post(title=appstruct['title'],
-                        text=appstruct['text'],
-                        lede=appstruct['lede'],
-                        journal_name=req.matchdict['journal_name'])
-            DBSession.add(post)
-            DBSession.flush()     # make post.id available to us
-            return self._redirect_to_post_view(post)
-
-        else:
-            return dict(form=form.render(),
-                        registry=form.get_widget_resources(),
-                        post=post,
-                        journal_url=self.journal_url,
-                        title='Add Post',
-                        logged_in=authenticated_userid(req),
-            )

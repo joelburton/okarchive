@@ -27,7 +27,7 @@ class LoginLogoutView:
         """Produce login form or handle response."""
 
         request = self.request
-        login_url = request.route_url('login')
+        login_url = request.application_url + '/login'
         referrer = request.url
         if referrer == login_url:
             referrer = '/' # never use the login form itself as came_from
@@ -46,7 +46,7 @@ class LoginLogoutView:
             login = password = ''
 
         return dict(
-            url=request.application_url + '/login',
+            url=login_url,
             came_from=came_from,
             login=login,
             password=password,
