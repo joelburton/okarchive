@@ -107,6 +107,7 @@ class PostView:
                             registry=form.get_widget_resources(),
                             post=post,
                             journal_url=self.journal_url,
+                            title='Edit Post',
                             logged_in=authenticated_userid(req),
                 )
             post.title = appstruct['title']
@@ -122,6 +123,7 @@ class PostView:
                         registry=form.get_widget_resources(),
                         post=post,
                         journal_url=self.journal_url,
+                        title='Edit Post',
                         logged_in=authenticated_userid(req),
             )
 
@@ -157,6 +159,7 @@ class PostView:
                             registry=form.get_widget_resources(),
                             post=post,
                             journal_url=self.journal_url,
+                            title='Add Post',
                             logged_in=authenticated_userid(req),
                 )
                 # the form submission succeeded, we have the data
@@ -172,5 +175,6 @@ class PostView:
                         registry=form.get_widget_resources(),
                         post=post,
                         journal_url=self.journal_url,
+                        title='Add Post',
                         logged_in=authenticated_userid(req),
             )

@@ -1,7 +1,7 @@
 <metal:macro use-macro="load:main.pt">
 <metal:content fill-slot="content">
 
-<h1>${post.title}</h1>
+<h1>${title}</h1>
 
 <p>Back to <a href="${journal_url}">${post.journal_name}</a></p>
 
