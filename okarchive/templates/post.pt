@@ -32,8 +32,8 @@
           <span class="glyphicon glyphicon-pencil"></span>
           Edit
         </a>
-        <a tal:condition="delete_url"
-            class="btn btn-danger btn-sm" data-toggle="modal" href="#myModal">
+        <a tal:condition="delete_url" class="btn btn-danger btn-sm"
+            data-toggle="modal" href="#delete-post-modal">
           <span class="glyphicon glyphicon-trash"></span>
           Delete
         </a>
@@ -45,9 +45,10 @@
 </div>
 
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
-     data-backdrop="false" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Modal for deleting post confirmation -->
+<div tal:condition="delete_url" class="modal fade" id="delete-post-modal"
+     tabindex="-1" role="dialog" data-backdrop="false"
+     aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header"><h4 class="modal-title">Delete post?</h4></div>

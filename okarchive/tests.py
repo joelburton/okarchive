@@ -5,8 +5,23 @@ import transaction
 
 from pyramid import testing
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.security import (
+    Allow,
+    Everyone,
+)
 
 from .models import DBSession
+
+
+class AllAllowedRootFactory:
+    __acl__ = [
+        (Allow, Everyone, 'view'),
+        (Allow, Everyone, 'add'),
+        (Allow, Everyone, 'edit'),
+        (Allow, Everyone, 'delete'),
+    ]
+
+resource = AllAllowedRootFactory()
 
 
 def _initTestingDB():
@@ -112,7 +127,7 @@ class TestJournalView(unittest.TestCase):
 
         request = testing.DummyRequest()
         request.matchdict['journal_name'] = 'mr-nobody'
-        view = JournalView(request)
+        view = JournalView(resource, request)
         self.assertRaises(HTTPNotFound, view.view)
 
     def test_it(self):
@@ -120,7 +135,7 @@ class TestJournalView(unittest.TestCase):
 
         request = testing.DummyRequest()
         request.matchdict['journal_name'] = 'distractionbike'
-        view = JournalView(request)
+        view = JournalView(resource, request)
         info = view.view()
         self.assertEqual(info['journal_name'], 'distractionbike')
         self.assertEqual(len(info['posts']), 1)
@@ -144,7 +159,7 @@ class TestPostView(unittest.TestCase):
         request = testing.DummyRequest()
         request.matchdict['journal_name'] = 'mr-nobody'
         request.matchdict['post_id'] = 99
-        view = PostView(request)
+        view = PostView(resource, request)
         self.assertRaises(HTTPNotFound, view.view)
 
     def test_it(self):
@@ -153,7 +168,7 @@ class TestPostView(unittest.TestCase):
         request = testing.DummyRequest()
         request.matchdict['journal_name'] = 'distractionbike'
         request.matchdict['post_id'] = 1
-        view = PostView(request)
+        view = PostView(resource, request)
         info = view.view()
         self.assertEqual(info['journal_url'],
                          'http://example.com/journals/distractionbike')
@@ -178,7 +193,7 @@ class TestPostAdd(unittest.TestCase):
 
         request = testing.DummyRequest()
         request.matchdict['journal_name'] = 'distractionbike'
-        view = PostView(request)
+        view = PostView(resource, request)
         info = view.add()
         self.assertEqual(info['post'].title, 'Title')
 
@@ -189,7 +204,7 @@ class TestPostAdd(unittest.TestCase):
         request = testing.DummyRequest(
             post={'add': 1, 'title': 'Yo', 'text': 'There'})
         request.matchdict['journal_name'] = 'distractionbike'
-        view = PostView(request)
+        view = PostView(resource, request)
         info = view.add()
         self.assertEqual(info.status, '302 Found')
         self.assertEqual(info.location,
@@ -222,7 +237,7 @@ class TestPostEdit(unittest.TestCase):
         request = testing.DummyRequest()
         request.matchdict['journal_name'] = 'distractionbike'
         request.matchdict['post_id'] = 1
-        view = PostView(request)
+        view = PostView(resource, request)
         info = view.edit()
         self.assertEqual(info['post'].title, 'First Post')
 
@@ -234,7 +249,7 @@ class TestPostEdit(unittest.TestCase):
             post={'edit': 1, 'title': 'Yo', 'text': 'There'})
         request.matchdict['journal_name'] = 'distractionbike'
         request.matchdict['post_id'] = 1
-        view = PostView(request)
+        view = PostView(resource, request)
         info = view.edit()
         self.assertEqual(info.status, '302 Found')
         self.assertEqual(info.location,
@@ -294,7 +309,18 @@ class FunctionalTests(unittest.TestCase):
              'form.submitted': 1},
             status=302).follow()
 
-    def test_journal_view(self):
+    def test_journal_view_unauth(self):
+        res = self.testapp.get('/journals/distractionbike', status=200)
+        self.assertIn('<h1>distractionbike</h1>', res)
+        self.assertNotIn(
+            'href="http://localhost/journals/distractionbike/add">Add post',
+            res)
+        self.assertIn(
+            '<a href="http://localhost/journals/distractionbike/1">',
+            res)
+
+    def test_journal_view_auth(self):
+        self._login()
         res = self.testapp.get('/journals/distractionbike', status=200)
         self.assertIn('<h1>distractionbike</h1>', res)
         self.assertIn(
@@ -304,12 +330,22 @@ class FunctionalTests(unittest.TestCase):
             '<a href="http://localhost/journals/distractionbike/1">',
             res)
 
-    def test_post_view(self):
+    def test_post_view_unauth(self):
+        res = self.testapp.get('/journals/distractionbike/1', status=200)
+        self.assertIn('<h1>First Post</h1>', res)
+        self.assertNotIn(
+            'href="http://localhost/journals/distractionbike/1/edit"',
+            res)
+        self.assertNotIn('#delete-post-modal"', res)
+
+    def test_post_view_auth(self):
+        self._login()
         res = self.testapp.get('/journals/distractionbike/1', status=200)
         self.assertIn('<h1>First Post</h1>', res)
         self.assertIn(
             'href="http://localhost/journals/distractionbike/1/edit"',
             res)
+        self.assertIn('#delete-post-modal', res)
 
     def test_login_incorrect(self):
         # Get login form
