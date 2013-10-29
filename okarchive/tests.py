@@ -191,7 +191,6 @@ class TestJournalView(unittest.TestCase):
         from . import add_routes
 
         self.config = testing.setUp()
-        add_routes(self.config)
         _initTestingDB()
 
     def tearDown(self):
@@ -215,10 +214,7 @@ class TestJournalView(unittest.TestCase):
 
 class TestPostView(unittest.TestCase):
     def setUp(self):
-        from . import add_routes
-
         self.config = testing.setUp()
-        add_routes(self.config)
         _initTestingDB()
 
     def tearDown(self):
@@ -243,10 +239,7 @@ class TestPostView(unittest.TestCase):
 
 class TestPostAdd(unittest.TestCase):
     def setUp(self):
-        from . import add_routes
-
         self.config = testing.setUp()
-        add_routes(self.config)
         _initTestingDB()
 
     def tearDown(self):
@@ -299,7 +292,6 @@ class TestPostEdit(unittest.TestCase):
         from . import add_routes
 
         self.config = testing.setUp()
-        add_routes(self.config)
         _initTestingDB()
 
 
