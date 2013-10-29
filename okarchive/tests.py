@@ -65,6 +65,13 @@ class TestModel(unittest.TestCase):
     def tearDown(self):
         DBSession.remove()
 
+    def test_journals(self):
+        from .models import Journals
+        journals = Journals()
+
+        self.assertEqual(journals['distractionbike'].name, 'distractionbike')
+        self.assertRaises(KeyError, journals.__getitem__, 'nosuch')
+
     def test_journal(self):
         from .models import Journal
 
@@ -464,4 +471,26 @@ class FunctionalTests(unittest.TestCase):
         self.assertIn('<h1>My 2nd Post</h1>', res3)
         self.assertIn('2nd lede', res3)
         self.assertIn('<b>My 2nd body</b>', res3)
+
+    def test_edit_post_cancel(self):
+        res = self._login()
+        res = self.testapp.get('/journals/distractionbike/1')
+        res2 = res.click('Edit')
+        self.assertSequenceEqual(res2.status, '200 OK')
+        self.assertIn('<h1>Edit Post</h1>', res2)
+
+        form = res2.forms['edit-post']
+        form['title'] = 'My 2nd Post'
+        res3 = form.submit('cancel').follow()
+
+        self.assertNotIn('<h1>My 2nd Post</h1>', res3)
+        self.assertIn('<h1>First Post</h1>', res3)
+
+    def test_edit_post_delete(self):
+        res = self._login()
+        res = self.testapp.get('/journals/distractionbike/1')
+        form = res.forms['post-delete']
+        res2 = form.submit('post-delete-btn').follow()
+        self.assertNotIn('First Post', res2)
+        self.assertIn('There are no posts in this journal you can read.', res2)
 
