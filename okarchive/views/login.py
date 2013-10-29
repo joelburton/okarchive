@@ -12,42 +12,48 @@ from pyramid.httpexceptions import HTTPFound
 
 from ..security import authenticate
 
+class LoginLogoutView:
+    """Login and logout."""
 
-@view_config(route_name='login',
-             renderer='okarchive:templates/login.pt')
-@forbidden_view_config(renderer='okarchive:templates/login.pt')
-def login(request):
-    """Produce login form or handle response."""
+    def __init__(self, request):
+        self.request = request
 
-    login_url = request.route_url('login')
-    referrer = request.url
-    if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
-    came_from = request.params.get('came_from', referrer)
+    @view_config(route_name='login',
+                 renderer='okarchive:templates/login.pt')
+    @forbidden_view_config(renderer='okarchive:templates/login.pt')
+    def login(self):
+        """Produce login form or handle response."""
 
-    if 'form.submitted' in request.params:
-        login = request.params['login']
-        password = request.params['password']
-        if authenticate(login, password):
-            headers = remember(request, login)
-            return HTTPFound(location=came_from, headers=headers)
-        message = 'Failed login'
+        request = self.request
+        login_url = request.route_url('login')
+        referrer = request.url
+        if referrer == login_url:
+            referrer = '/' # never use the login form itself as came_from
+        came_from = request.params.get('came_from', referrer)
 
-    else:
-        message = login = password = ''
+        if 'form.submitted' in request.params:
+            login = request.params['login']
+            password = request.params['password']
+            if authenticate(login, password):
+                headers = remember(request, login)
+                return HTTPFound(location=came_from, headers=headers)
+            message = 'Failed login'
 
-    return dict(
-        message=message,
-        url=request.application_url + '/login',
-        came_from=came_from,
-        login=login,
-        password=password,
-    )
+        else:
+            message = login = password = ''
+
+        return dict(
+            message=message,
+            url=request.application_url + '/login',
+            came_from=came_from,
+            login=login,
+            password=password,
+        )
 
 
-@view_config(route_name='logout')
-def logout(request):
-    """Logout nd return to home page."""
+    @view_config(route_name='logout')
+    def logout(self):
+        """Logout and return to home page."""
 
-    headers = forget(request)
-    return HTTPFound(location='/', headers=headers)
+        headers = forget(self.request)
+        return HTTPFound(location='/', headers=headers)
