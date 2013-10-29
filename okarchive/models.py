@@ -37,17 +37,6 @@ from pyramid.security import (
     )
 
 
-class RootFactory:
-    __acl__ = [(Allow, Everyone, 'view'),
-               (Allow, 'group:editors', 'edit'),
-               (Allow, 'group:editors', 'add'),
-               (Allow, 'group:editors', 'delete'),
-    ]
-
-    def __init__(self, request):
-        pass
-
-
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
@@ -73,10 +62,79 @@ class User(Base):
         return md5 == self.password_md5
 
 
+class RootFactory:
+    __acl__ = [(Allow, Everyone, 'view'),
+               (Allow, 'group:editors', ('edit', 'add', 'delete')),
+    ]
+
+    def __init__(self, request):
+        pass
+
+    def __call__(self):
+        return siteRoot
+
+
+class SiteRoot:
+    __name__ = ''
+    __parent__ = None
+
+    def __getitem__(self, item):
+        return {'journals': journals}[item]
+
+siteRoot = SiteRoot()
+
+
+class Journals:
+    """Traversable container for journals."""
+
+    __name__ = 'journals'
+    __parent__ = siteRoot
+
+    def __getitem__(self, item):
+        """Get journal by name."""
+
+        journal = (DBSession
+                .query(Journal)
+                .filter(Journal.name == item)
+                .first())
+        if not journal:
+            raise KeyError('No such journal: {}'.format(item))
+        return journal
+
+journals = Journals()
+
+
 class Journal(Base):
     """Journal."""
 
     __tablename__ = 'journals'
+
+    @property
+    def __name__(self):
+        return self.name
+
+    __parent__ = journals
+
+    def __acl__(self):
+        """Permisssions."""
+
+        return [(Allow, Everyone, 'view'),
+                (Allow, 'group:editors', ('edit', 'add', 'delete')),
+                (Allow, self.name, ('edit', 'add', 'delete')),
+        ]
+
+    def __getitem__(self, item):
+        """Get post by id."""
+
+        post_id = str(item)
+        post = (DBSession
+                .query(Post)
+                .filter(Post.id == post_id)
+                .filter(Post.journal_name == self.name)
+                .first())
+        if not post:
+            raise KeyError('No such post: {}'.format(item))
+        return post
 
     name = Column(
         String,
@@ -88,6 +146,25 @@ class Post(Base):
     """Post."""
 
     __tablename__ = 'posts'
+
+    @property
+    def __name__(self):
+        return str(self.id)
+
+    @property
+    def __parent__(self):
+        return (DBSession
+                .query(Journal)
+                .filter(Journal.name == self.journal_name)
+                .first())
+
+    def __acl__(self):
+        """Permissions."""
+
+        return [(Allow, Everyone, 'view'),
+                (Allow, 'group:editors', ('edit', 'add', 'delete')),
+                (Allow, self.name, ('edit', 'add', 'delete')),
+        ]
 
     id = Column(
         Integer,
