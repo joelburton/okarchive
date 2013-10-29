@@ -3,7 +3,7 @@
 
 <h1>${journal_name}</h1>
 
-<ul>
+<ul tal:condition="posts">
   <li tal:repeat="post posts">
     <a href="${request.route_url(
             'post',
@@ -13,6 +13,10 @@
     </a>
   </li>
 </ul>
+
+<p tal:condition="not: posts" class="text-info">
+  There are no posts in this journal you can read.
+</p>
 
 <p tal:condition="add_url">
   <a class="btn btn-primary" href="${add_url}">Add post</a>
