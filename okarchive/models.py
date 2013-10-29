@@ -94,6 +94,13 @@ class Journals:
             raise KeyError('No such journal: {}'.format(item))
         return journal
 
+    @property
+    def journals(self):
+        """Return list of journals."""
+
+        return (DBSession
+                .query(Journal))
+
 journals = Journals()
 
 

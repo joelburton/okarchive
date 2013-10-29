@@ -4,7 +4,9 @@
 <h1>Journals</h1>
 
 <ul>
-  <li><a href="/journals/distractionbike">distractionbike</a></li>
+  <li tal:repeat="journal journals.journals">
+    <a href="${journal.name}">${journal.name}</a>
+  </li>
 </ul>
 
 </metal:content>

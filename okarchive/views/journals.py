@@ -11,11 +11,13 @@ from ..models import Journals
 class JournalsView(object):
     """List of journals page."""
 
-    def __init__(self, request):
+    def __init__(self, resource, request):
         self.request = request
+        self.resource = resource
 
     def __call__(self):
         return dict(
             logged_in=authenticated_userid(self.request),
+            journals=self.resource,
         )
 
