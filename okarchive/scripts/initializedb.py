@@ -42,6 +42,8 @@ def main(argv=sys.argv): #pragma NOCOVER
         password = hashlib.md5('secret'.encode()).hexdigest()
         user = User(name='distractionbike', password_md5=password)
         DBSession.add(user)
+        user2 = User(name='otherguy', password_md5=password)
+        DBSession.add(user2)
         journal = Journal(name='distractionbike')
         DBSession.add(journal)
         post = Post(journal_name='distractionbike',
