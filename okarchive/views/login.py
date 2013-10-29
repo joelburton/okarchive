@@ -35,15 +35,15 @@ class LoginLogoutView:
             login = request.params['login']
             password = request.params['password']
             if authenticate(login, password):
+                request.session.flash(('success', 'Signed in.'))
                 headers = remember(request, login)
                 return HTTPFound(location=came_from, headers=headers)
-            message = 'Failed login'
+            request.session.flash(('danger', 'Failed sign in.'))
 
         else:
-            message = login = password = ''
+            login = password = ''
 
         return dict(
-            message=message,
             url=request.application_url + '/login',
             came_from=came_from,
             login=login,
@@ -56,4 +56,5 @@ class LoginLogoutView:
         """Logout and return to home page."""
 
         headers = forget(self.request)
+        self.request.session.flash(('success', 'Signed out.'))
         return HTTPFound(location='/', headers=headers)

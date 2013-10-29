@@ -1,16 +1,27 @@
-<!doctype html>
-<html>
-<body>
+<metal:macro use-macro="load:main.pt">
+<metal:content fill-slot="content">
 
-<h1>Login</h1>
-<span tal:replace="message"/>
+<link rel="stylesheet" href="/static/css/signin.css" />
 
-<form id="login" action="${url}" method="post">
+
+<form class="form-signin" id="login" action="${url}" method="post">
+  <h2 class="form-signin-heading">Please sign in</h2>
+
   <input type="hidden" name="came_from" value="${came_from}"/>
-  <input type="text" name="login" value="${login}"/><br/>
-  <input type="password" name="password" value="${password}"/><br/>
-  <input type="submit" name="form.submitted" value="Log In"/>
+
+  <input class="form-control" type="text" name="login" id="login"
+         value="${login}" placeholder="username" autofocus/><br/>
+
+  <input class="form-control" type="password" name="password"
+         value="${password}"/><br/>
+
+  <label class="checkbox">
+    <input type="checkbox" value="remember-me"> Remember me
+  </label>
+  <input class="btn btn-lg btn-primary btn-block" type="submit"
+         name="form.submitted" value="Sign In"/>
 </form>
 
-</body>
-</html>
+</metal:content>
+</metal:macro>
+

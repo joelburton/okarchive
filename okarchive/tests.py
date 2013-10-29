@@ -314,37 +314,37 @@ class FunctionalTests(unittest.TestCase):
     def test_login_incorrect(self):
         # Get login form
         res = self.testapp.get('/login', status=200)
-        self.assertIn('<h1>Login</h1>', res)
-        self.assertNotIn('Failed login', res)
+        self.assertIn('Please sign in', res)
+        self.assertNotIn('Failed sign in', res)
         # login with wrong password
         form = res.forms['login']
         form['login'].value = 'distractionbike'
         form['password'].value = 'wrong'
         res2 = form.submit('form.submitted')
-        self.assertIn('Failed login', res2)
-        self.assertNotIn('/logout">Logout</a>', res2)
+        self.assertIn('Failed sign in', res2)
+        self.assertNotIn('/logout">Sign out</a>', res2)
 
     def test_login_correct(self):
         # Get login form
         res = self.testapp.get('/login', status=200)
-        self.assertIn('<h1>Login</h1>', res)
-        self.assertNotIn('Failed login', res)
+        self.assertIn('Please sign in', res)
+        self.assertNotIn('Failed sign in', res)
 
         # Login with right password
         form = res.forms['login']
         form['login'].value = 'distractionbike'
         form['password'].value = 'secret'
         res2 = form.submit('form.submitted')
-        self.assertNotIn('Failed login', res2)
+        self.assertNotIn('Failed sign in', res2)
         self.assertEqual(res2.status, '302 Found')
 
         # Get page on site and make sure we see logout button
         res3 = res2.follow()
-        self.assertIn('/logout">Logout</a>', res3)
+        self.assertIn('/logout">Sign out</a>', res3)
 
     def test_logout(self):
         res = self._login()
-        res2 = res.click('Logout').follow()
+        res2 = res.click('Sign out').follow()
         self.assertNotIn('/logout">Logout</a>', res2)
 
     def test_goto_journal(self):
