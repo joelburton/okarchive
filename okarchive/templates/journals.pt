@@ -5,7 +5,7 @@
 
 <ul>
   <li tal:repeat="journal journals.journals">
-    <a href="${journal.name}">${journal.name}</a>
+    <a href="${request.resource_url(journal)}">${journal.name}</a>
   </li>
 </ul>
 
