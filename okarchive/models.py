@@ -184,6 +184,7 @@ class Journal(Base):
 
         self.posts.remove(self[key])
 
+
     name = Column(
         String,
         primary_key=True,
@@ -240,6 +241,38 @@ class Post(Base):
                 (Allow, 'group:editors', ('edit', 'add', 'delete')),
                 (Allow, self.name, ('edit', 'add', 'delete')),
         ]
+
+    def __getitem__(self, comment_id):
+        """Get comment by id."""
+
+        comment = (DBSession
+                .query(Comment)
+                .filter(Comment.id == comment_id)
+                .first())
+        if not comment:
+            raise KeyError('No such comment: {}'.format(comment_id))
+        return comment
+
+    def __setitem__(self, key, comment):
+        """Set comment in post.
+
+        This should be uncommonly called; normally call add_coment, since
+        that doesn't require that we know the comment id in advance--they're
+        auto-incremented by the database. This might be useful if we need
+        to replace a comment with a new one with a pre-used number.
+        """
+
+        if comment.post_id != self.id:
+            raise ValueError('Comment post.id does not match post: {}, {}'
+            .format(comment.post_id, self.id))
+        self.comments.append(comment)
+        DBSession.flush()    # we'll want the auto-inc'd comment ID
+
+    def __delitem__(self, key):
+        """Delete comment."""
+
+        self.comments.remove(self[key])
+
 
     id = Column(
         Integer,
@@ -316,6 +349,21 @@ class Post(Base):
         if _flush:
             DBSession.flush()
         return comment
+
+    def values(self):
+        """List of comments."""
+
+        return [c for c in self.comments]
+
+    def keys(self):
+        """List of comment IDs."""
+
+        return [c.id for c in self.comments]
+
+    def items(self):
+        """List of (comment-id, comment) tuples."""
+
+        return [(c.id, c) for c in self.comments]
 
 
 Index('post_journalname', Post.journal_name)

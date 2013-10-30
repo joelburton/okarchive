@@ -206,6 +206,36 @@ class TestModel(unittest.TestCase):
         self.assertTrue(user.verifyPassword('secret'))
         self.assertEqual(user.password_md5, '5ebe2294ecd0e0f08eab7690d2a6ee69')
 
+    def test_post_comments(self):
+        from .models import Post, Comment
+
+        post = (DBSession
+                 .query(Post)
+                 .one())
+        comment1 = (DBSession
+                    .query(Comment)
+                    .one())
+
+        self.assertSequenceEqual(post.keys(), [1])
+        self.assertSequenceEqual(post.values(), [comment1])
+        self.assertSequenceEqual(post.items(), [(1, comment1)])
+
+        del post[1]
+        self.assertSequenceEqual(post.keys(), [])
+        self.assertSequenceEqual(list(DBSession.query(Comment)), [])
+
+        comment2 = Comment(text='test', user_id='bob', post_id=post.id)
+        post[1] = comment2
+        self.assertSequenceEqual(post.keys(), [1])
+        self.assertSequenceEqual(list(DBSession.query(Comment)), [comment2])
+
+        # Test adding a comment with mismatch
+        comment2 = Comment(text='test', user_id='bob', post_id=99)
+
+        def _set(id, comment):
+            post[id] = comment
+
+        self.assertRaises(ValueError, _set, 1, comment2)
 
 class TestJournalView(unittest.TestCase):
     def setUp(self):
