@@ -19,6 +19,7 @@ import colander
 from pyramid.security import (
     Allow,
     Everyone,
+    Authenticated,
     )
 
 from . import Base, DBSession
@@ -43,6 +44,7 @@ class Post(Base):
         """Permissions."""
 
         return [(Allow, Everyone, 'view'),
+                (Allow, Authenticated, 'add'),
                 (Allow, 'group:editors', ('edit', 'add', 'delete')),
                 (Allow, self.journal_name, ('edit', 'add', 'delete')),
                 ]
