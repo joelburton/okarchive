@@ -54,7 +54,7 @@ class Post(Base):
 
         comment = (DBSession
                    .query(Comment)
-                   .filter(Comment.id == comment_id)
+                   .filter_by(id=comment_id)
                    .first())
         if not comment:
             raise KeyError('No such comment: {}'.format(comment_id))

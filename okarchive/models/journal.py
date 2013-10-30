@@ -36,8 +36,8 @@ class Journal(Base):
 
         post = (DBSession
                 .query(Post)
-                .filter(Post.id == item)
-                .filter(Post.journal_name == self.name)
+                .filter_by(id=item)
+                .filter_by(journal_name=self.name)
                 .first())
         if not post:
             raise KeyError('No such post: {}'.format(item))

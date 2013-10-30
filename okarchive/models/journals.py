@@ -13,7 +13,7 @@ class Journals:
 
         journal = (DBSession
                    .query(Journal)
-                   .filter(Journal.name == item)
+                   .filter_by(name=item)
                    .first())
         if not journal:
             raise KeyError('No such journal: {}'.format(item))
