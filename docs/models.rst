@@ -4,10 +4,15 @@ Models
 I love :py:class:`zipfile.ZipFile` and raising
 :py:class:`pyramid.httpexceptions.HTTPFound`.
 
-.. automodule:: okarchive.models
+.. automodule:: okarchive.models.journal
    :members:
-   :undoc-members:
-   :special-members: __tablename__
+   :special-members:
+
+.. automodule:: okarchive.models.post
+   :members:
+   :special-members:
+
+
 
 .. automodule:: okarchive.views.journal
    :members:
