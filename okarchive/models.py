@@ -265,6 +265,7 @@ class Post(Base):
     lede = Column(
         Text,
         nullable=True,
+        default='',
         info={'colanderalchemy':
                   dict(title='Lead In',
                        default='',
