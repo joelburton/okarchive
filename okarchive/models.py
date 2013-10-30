@@ -164,21 +164,6 @@ class Journal(Base):
             raise KeyError('No such post: {}'.format(item))
         return post
 
-    def __setitem__(self, key, post):
-        """Set post in journal.
-
-        This should be uncommonly called; normally call add_post, since
-        that doesn't require that we know the post id in advance--they're
-        auto-incremented by the database. This might be useful if we need
-        to replace a post with a new one with a pre-used number.
-        """
-
-        if post.journal_name != self.name:
-            raise ValueError('Post journal.name does not match journal: {}, {}'
-                    .format(post.journal_name, self.name))
-        self.posts.append(post)
-        DBSession.flush()    # we'll want the auto-inc'd post ID
-
     def __delitem__(self, key):
         """Delete post."""
 
@@ -239,7 +224,7 @@ class Post(Base):
 
         return [(Allow, Everyone, 'view'),
                 (Allow, 'group:editors', ('edit', 'add', 'delete')),
-                (Allow, self.name, ('edit', 'add', 'delete')),
+                (Allow, self.journal_name, ('edit', 'add', 'delete')),
         ]
 
     def __getitem__(self, comment_id):
@@ -252,21 +237,6 @@ class Post(Base):
         if not comment:
             raise KeyError('No such comment: {}'.format(comment_id))
         return comment
-
-    def __setitem__(self, key, comment):
-        """Set comment in post.
-
-        This should be uncommonly called; normally call add_coment, since
-        that doesn't require that we know the comment id in advance--they're
-        auto-incremented by the database. This might be useful if we need
-        to replace a comment with a new one with a pre-used number.
-        """
-
-        if comment.post_id != self.id:
-            raise ValueError('Comment post.id does not match post: {}, {}'
-            .format(comment.post_id, self.id))
-        self.comments.append(comment)
-        DBSession.flush()    # we'll want the auto-inc'd comment ID
 
     def __delitem__(self, key):
         """Delete comment."""
@@ -345,7 +315,8 @@ class Post(Base):
             comment = Comment(post_id=self.id, **kw)
         else:
             comment.post_id = self.id
-        DBSession.add(comment)
+        #DBSession.add(comment)
+        self.comments.append(comment)
         if _flush:
             DBSession.flush()
         return comment
@@ -374,6 +345,15 @@ class Comment(Base):
     """Comment."""
 
     __tablename__ = 'comments'
+
+    @property
+    def __name__(self):
+        return str(self.id)
+
+    @property
+    def __parent__(self):
+        return self.post
+
 
     id = Column(
         Integer,
@@ -411,7 +391,6 @@ class Comment(Base):
                         cascade='all, delete-orphan',
                         passive_deletes=True)
     )
-
 
 
 Index('comment_postid', Comment.post_id)

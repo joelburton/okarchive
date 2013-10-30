@@ -4,10 +4,6 @@ from pyramid.security import authenticated_userid
 from ..models import Journals
 
 
-@view_config(name='',
-             renderer='okarchive:templates/journals.pt',
-             context=Journals,
-             permission='view')
 class JournalsView(object):
     """List of journals page."""
 
@@ -15,7 +11,11 @@ class JournalsView(object):
         self.request = request
         self.resource = resource
 
-    def __call__(self):
+    @view_config(name='',
+                 renderer='okarchive:templates/journals.pt',
+                 context=Journals,
+                 permission='view')
+    def view(self):
         return dict(
             logged_in=authenticated_userid(self.request),
             journals=self.resource,

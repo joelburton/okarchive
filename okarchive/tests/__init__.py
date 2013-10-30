@@ -1,49 +1,48 @@
 """OkArchive tests."""
 
-import transaction
+import hashlib
+import unittest
 
-from pyramid.security import (
-    Allow,
-    Everyone,
+from sqlalchemy import create_engine
+
+from okarchive.models import (
+    Base,
+    Journal,
+    Post,
+    Comment,
+    User,
+    DBSession,
     )
 
-from ..models import DBSession
+class BaseDatabaseTest(unittest.TestCase):
 
+    def setUp(self):
+        self.setUpDb()
 
+    def tearDown(self):
+        DBSession.remove()
 
-class AllAllowedRootFactory:
-    __acl__ = [
-        (Allow, Everyone, 'view'),
-        (Allow, Everyone, 'add'),
-        (Allow, Everyone, 'edit'),
-        (Allow, Everyone, 'delete'),
-    ]
+    def setUpDb(self):
+        engine = create_engine('sqlite://')
+        Base.metadata.create_all(engine)
+        DBSession.configure(bind=engine)
 
+    def addUser(self):
+        if not (DBSession
+                .query(User)
+                .filter(User.name == 'distractionbike')
+                .first()):
+            md5 = hashlib.md5('secret'.encode()).hexdigest()
+            user = User(name='distractionbike', password_md5=md5)
+            DBSession.add(user)
+            return user
 
-resource = AllAllowedRootFactory()
-
-
-def _initTestingDB():
-    import hashlib
-    from sqlalchemy import create_engine
-    from okarchive.models import (
-        Base,
-        Journal,
-        Post,
-        Comment,
-        User,
-        )
-
-    engine = create_engine('sqlite://')
-    Base.metadata.create_all(engine)
-    DBSession.configure(bind=engine)
-
-    with transaction.manager:
-        md5 = hashlib.md5('secret'.encode()).hexdigest()
-        user = User(name='distractionbike', password_md5=md5)
-        DBSession.add(user)
+    def addJournal(self):
         journal = Journal(name='distractionbike')
         DBSession.add(journal)
+        return journal
+
+    def addPost(self):
         post = Post(
             journal_name='distractionbike',
             title='First Post',
@@ -51,13 +50,16 @@ def _initTestingDB():
             text='<b>My body</b>')
         DBSession.add(post)
         DBSession.flush()
-        comment = Comment(post_id=post.id, user_id='bob', text='First Comment')
+        return post
+
+    def addComment(self):
+        comment = Comment(post_id=1, user_id='bob', text='First Comment')
         DBSession.add(comment)
+        DBSession.flush()
+        return comment
 
-    return DBSession
-
-
-#from . import models
-#from . import security
-#from . import views
-#from . import functional
+    def addAll(self):
+        self.addUser()
+        self.addJournal()
+        self.addPost()
+        self.addComment()

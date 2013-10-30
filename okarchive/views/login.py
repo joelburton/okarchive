@@ -60,4 +60,5 @@ class LoginLogoutView:
 
         headers = forget(self.request)
         self.request.session.flash(('success', 'Signed out.'))
-        return HTTPFound(location='/', headers=headers)
+        return HTTPFound(location=self.request.application_url,
+                         headers=headers)
