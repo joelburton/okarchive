@@ -268,7 +268,7 @@ class Post(Base):
         info={'colanderalchemy':
                   dict(title='Lead In',
                        default='',
-                       validator=colander.Length(0,200),
+                       validator=colander.Length(0,400),
                        widget=deform.widget.TextAreaWidget(),
                     )}
     )
