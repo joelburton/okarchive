@@ -1,0 +1,29 @@
+<div tal:repeat="comment post.comments" class="panel panel-default">
+  <div class="panel-body" tal:content="structure comment.text">[text]</div>
+
+  <div class="panel-footer">
+    <div class="row">
+
+      <div class="col-md-8 text-info">
+        <small tal:define="fmt string:%B %e, %Y at %-I:%M %p">
+          Posted at ${comment.creation_date.strftime(fmt)}.
+        </small>
+      </div>
+
+      <div class="col-md-4 text-right">
+        <a tal:condition="edit_url"
+            class="btn btn-default btn-xs" href="${edit_url}">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Edit
+        </a>
+        <a tal:condition="delete_url" class="btn btn-danger btn-xs"
+                                      data-toggle="modal"
+                                      href="#delete-post-modal">
+          <span class="glyphicon glyphicon-trash"></span>
+          Delete
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>

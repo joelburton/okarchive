@@ -44,6 +44,8 @@
 
 </div>
 
+<metal:comments use-macro="load:comments.pt" />
+
 
 <!-- Modal for deleting post confirmation -->
 <div tal:condition="delete_url" class="modal fade" id="delete-post-modal"
