@@ -19,7 +19,7 @@ class CommentView:
 
     @view_config(name="hide",
                  context=Comment,
-                 permission="edit")
+                 permission="hide")
     def reject(self):
         self.resource.hidden = True
         return Response(self.resource.text)
@@ -27,7 +27,7 @@ class CommentView:
 
     @view_config(name="publish",
                      context=Comment,
-                     permission="view")
+                     permission="publish")
     def publish(self):
         self.resource.hidden = False
         return Response(self.resource.text)

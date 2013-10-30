@@ -14,6 +14,13 @@ from sqlalchemy.orm import (
     backref,
     )
 
+from pyramid.security import (
+    Allow,
+    Deny,
+    Everyone,
+    Authenticated,
+)
+
 from . import Base, DBSession
 
 
@@ -30,6 +37,16 @@ class Comment(Base):
     def __parent__(self):
         return self.post
 
+    @property
+    def __acl__(self):
+        """Permissions."""
+
+        return [(Allow, Everyone, 'view'),
+                (Allow, Authenticated, 'add'),
+                (Deny, Everyone, ('add', 'edit', 'delete')),
+                (Allow, 'group:editors', ('edit', 'delete', 'publish', 'hide')),
+                (Allow, self.post.journal_name, ('publish', 'hide')),
+        ]
 
     id = Column(
         Integer,
@@ -59,7 +76,7 @@ class Comment(Base):
 
     modification_date = Column(
         DateTime,
-        # TODO: autoupdate
+        server_onupdate=func.now(),
     )
 
     hidden = Column(

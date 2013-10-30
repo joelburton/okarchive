@@ -2,7 +2,9 @@ import unittest
 
 from pyramid.security import (
     Allow,
+    Deny,
     Everyone,
+    Authenticated,
 )
 
 from okarchive.tests import BaseDatabaseTest, DBSession
@@ -145,6 +147,7 @@ class PostModelTest(ModelBaseTest):
         self.assertSequenceEqual(
             post.__acl__,
             [(Allow, Everyone, 'view'),
+             (Allow, Authenticated, 'add'),
              (Allow, 'group:editors', ('edit', 'add', 'delete')),
              (Allow, 'distractionbike', ('edit', 'add', 'delete')),
             ])
@@ -224,17 +227,19 @@ class CommentModelTest(ModelBaseTest):
         self.assertEqual(comment.__name__, '1')
         self.assertEqual(comment.__parent__, post)
 
-    #def test_acl(self):
-    #    journal = self.addJournal()
-    #    post = self.addPost()
-    #    comment = self.addComment()
-    #
-    #    self.assertSequenceEqual(
-    #        post.__acl__,
-    #        [(Allow, Everyone, 'view'),
-    #         (Allow, 'group:editors', ('edit', 'add', 'delete')),
-    #         (Allow, 'distractionbike', ('edit', 'add', 'delete')),
-    #        ])
+    def test_acl(self):
+        journal = self.addJournal()
+        post = self.addPost()
+        comment = self.addComment()
+
+        self.assertSequenceEqual(
+            comment.__acl__,
+            [(Allow, Everyone, 'view'),
+             (Allow, Authenticated, 'add'),
+             (Deny, Everyone, ('add', 'edit', 'delete')),
+             (Allow, 'group:editors', ('edit', 'delete', 'publish', 'hide')),
+             (Allow, 'distractionbike', ('publish', 'hide')),
+            ])
 
     def test_comment_404(self):
         journal = self.addJournal()

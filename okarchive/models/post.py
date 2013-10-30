@@ -133,7 +133,7 @@ class Post(Base):
 
     modification_date = Column(
         DateTime,
-        # TODO: autoupdate
+        server_onupdate=func.now(),
     )
 
     journal = relationship(
