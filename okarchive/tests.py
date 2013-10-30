@@ -287,6 +287,28 @@ class TestPostView(unittest.TestCase):
                          'http://example.com/journals/distractionbike/1/edit')
 
 
+class TestCommentView(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        _initTestingDB()
+
+    def tearDown(self):
+        DBSession.remove()
+        testing.tearDown()
+
+    def test_it(self):
+        from .views import CommentView
+        from .models import Comment
+
+        request = testing.DummyRequest()
+        comment = (DBSession
+                .query(Comment)
+                .one())
+        view = CommentView(comment, request)
+        info = view.view()
+        self.assertEqual(info.body, b'First Comment')
+
+
 class TestPostAdd(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
