@@ -98,7 +98,7 @@ class JournalModelTest(ModelBaseTest):
         del journal[1]
 
         self.assertSequenceEqual(journal.keys(), [])
-        self.assertSequenceEqual(list(DBSession.query(Post)), [])
+        self.assertEqual(DBSession.query(Post).count(), 0)
 
     def test_journal_add_post_by_attributes(self):
         journal = self.addJournal()
@@ -164,7 +164,7 @@ class PostModelTest(ModelBaseTest):
         post.delete()
 
         self.assertSequenceEqual(journal.keys(), [])
-        self.assertSequenceEqual(list(DBSession.query(Post)), [])
+        self.assertEqual(DBSession.query(Post).count(), 0)
 
     def test_post_add_comment_by_attributes(self):
         journal = self.addJournal()
@@ -174,7 +174,7 @@ class PostModelTest(ModelBaseTest):
         self.assertEquals(len(post.comments), 1)
         comment2 = post.add_comment(text='Foo', user_id='bob', _flush=True)
 
-        self.assertEquals(len(DBSession.query(Comment).all()), 2)
+        self.assertEquals(DBSession.query(Comment).count(), 2)
         self.assertEquals(len(post.comments), 2)
         self.assertSequenceEqual(post.keys(), [1, 2])
         self.assertSequenceEqual(post.values(), [comment, comment2])
@@ -190,7 +190,7 @@ class PostModelTest(ModelBaseTest):
         comment2 = Comment(text='Foo', user_id='bob')
         post.add_comment(comment2, _flush=True)
 
-        self.assertEquals(len(DBSession.query(Comment).all()), 2)
+        self.assertEquals(DBSession.query(Comment).count(), 2)
         self.assertEquals(len(post.comments), 2)
         self.assertSequenceEqual(post.keys(), [1, 2])
         self.assertEquals(post.values(), [comment, comment2])

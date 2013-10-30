@@ -268,7 +268,7 @@ class TestPostEdit(BaseTestView):
         self.assertEqual(info.location,
                          'http://example.com/journals/distractionbike/')
         self.assertTrue(request.session.peek_flash(), [('danger', 'Deleted.')])
-        self.assertSequenceEqual((DBSession.query(Post).all()), [])
+        self.assertEqual(DBSession.query(Post).count(), 0)
 
 
 class TestCommentView(BaseTestView):
