@@ -284,6 +284,10 @@ class Post(Base):
         DateTime,
         server_default=func.now(),
     )
+    modification_date = Column(
+        DateTime,
+        # TODO: autoupdate
+    )
     journal = relationship(
         'Journal',
         backref=backref('posts',
@@ -296,6 +300,22 @@ class Post(Base):
         """Delete post."""
 
         DBSession.delete(self)
+
+    def add_comment(self,
+                    comment=None,
+                    _flush=False,
+                    **kw
+    ):
+
+        if not comment:
+            comment = Comment(post_id=self.id, **kw)
+        else:
+            comment.post_id = self.id
+        DBSession.add(comment)
+        if _flush:
+            DBSession.flush()
+        return comment
+
 
 Index('post_journalname', Post.journal_name)
 Index('post_title', Post.title)
@@ -327,6 +347,10 @@ class Comment(Base):
         DateTime,
         server_default=func.now(),
     )
+    modification_date = Column(
+        DateTime,
+        # TODO: autoupdate
+    )
     hidden = Column(
         Boolean,
         default=False,
@@ -338,6 +362,7 @@ class Comment(Base):
                         cascade='all, delete-orphan',
                         passive_deletes=True)
     )
+
 
 
 Index('comment_postid', Comment.post_id)

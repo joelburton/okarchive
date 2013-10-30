@@ -174,6 +174,27 @@ class TestModel(unittest.TestCase):
         self.assertEqual(comment.hidden, False)
         self.assertEqual(comment.post.id, 1)
 
+
+    def test_post_add_comment_by_attributes(self):
+        from .models import Post
+
+        post = (DBSession
+                   .query(Post)
+                   .one())
+        post.add_comment(text='Foo', user_id='bob', _flush=True)
+        self.assertEquals(len(post.comments), 2)
+
+    def test_post_add_comment_by_object(self):
+        from .models import Post, Comment
+
+        post = (DBSession
+                .query(Post)
+                .one())
+
+        comment = Comment(text='Foo', user_id='bob')
+        post.add_comment(comment)
+        self.assertEquals(len(post.comments), 2)
+
     def test_user(self):
         from .models import User
 
@@ -188,7 +209,6 @@ class TestModel(unittest.TestCase):
 
 class TestJournalView(unittest.TestCase):
     def setUp(self):
-        from . import add_routes
 
         self.config = testing.setUp()
         _initTestingDB()
@@ -289,7 +309,6 @@ class TestPostAdd(unittest.TestCase):
 
 class TestPostEdit(unittest.TestCase):
     def setUp(self):
-        from . import add_routes
 
         self.config = testing.setUp()
         _initTestingDB()
