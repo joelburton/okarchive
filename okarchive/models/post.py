@@ -11,6 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     relationship,
     backref,
+    deferred,
     )
 
 import deform
@@ -117,14 +118,14 @@ class Post(Base):
                        )}
     )
 
-    text = Column(
+    text = deferred(Column(
         Text,
         info={'colanderalchemy':
                   dict(widget=deform.widget.RichTextWidget(),
                        title='Body Text',
                        default='',
                        )},
-        )
+        ))
 
     creation_date = Column(
         DateTime,

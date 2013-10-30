@@ -23,15 +23,25 @@ Base = declarative_base()
 
 
 def RootFactory(request):
+    """Return site root."""
+
     return siteRoot
 
 
 class SiteRoot:
+    """Site root for OkArchive.
+
+    A simple resource that has the journals object in its
+    mapping.
+    """
+
     __name__ = ''
     __parent__ = None
     __acl__ = [(Allow, Everyone, 'view')]
 
     def __getitem__(self, item):
+        """Return items in root; only journals."""
+
         return {'journals': journals}[item]
 
 
