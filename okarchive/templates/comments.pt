@@ -6,21 +6,17 @@
 
       <div class="col-md-8 text-info">
         <small tal:define="fmt string:%B %e, %Y at %-I:%M %p">
-          Posted at ${comment.creation_date.strftime(fmt)}.
+          Posted by ${comment.user_id}
+          at ${comment.creation_date.strftime(fmt)}.
         </small>
       </div>
 
       <div class="col-md-4 text-right">
-        <a tal:condition="edit_url"
-            class="btn btn-default btn-xs" href="${edit_url}">
-          <span class="glyphicon glyphicon-pencil"></span>
-          Edit
-        </a>
-        <a tal:condition="delete_url" class="btn btn-danger btn-xs"
+        <a tal:condition="delete_url" class="btn btn-warning btn-xs"
                                       data-toggle="modal"
                                       href="#delete-post-modal">
           <span class="glyphicon glyphicon-trash"></span>
-          Delete
+          Reject
         </a>
       </div>
 
