@@ -17,3 +17,18 @@ class CommentView:
         return Response(self.resource.text)
 
 
+    @view_config(name="hide",
+                 context=Comment,
+                 permission="edit")
+    def reject(self):
+        self.resource.hidden = True
+        return Response(self.resource.text)
+
+
+    @view_config(name="publish",
+                     context=Comment,
+                     permission="view")
+    def publish(self):
+        self.resource.hidden = False
+        return Response(self.resource.text)
+

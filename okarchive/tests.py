@@ -308,6 +308,32 @@ class TestCommentView(unittest.TestCase):
         info = view.view()
         self.assertEqual(info.body, b'First Comment')
 
+    def test_publish(self):
+        from .views import CommentView
+        from .models import Comment
+
+        request = testing.DummyRequest()
+        comment = (DBSession
+                   .query(Comment)
+                   .one())
+        comment.hidden = True
+        view = CommentView(comment, request)
+        info = view.publish()
+        self.assertFalse(comment.hidden)
+
+    def test_hide(self):
+        from .views import CommentView
+        from .models import Comment
+
+        request = testing.DummyRequest()
+        comment = (DBSession
+                   .query(Comment)
+                   .one())
+        comment.hidden = False
+        view = CommentView(comment, request)
+        info = view.reject()
+        self.assertTrue(comment.hidden)
+
 
 class TestPostAdd(unittest.TestCase):
     def setUp(self):
