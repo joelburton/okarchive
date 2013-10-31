@@ -53,6 +53,11 @@ class Post(Base):
     def __getitem__(self, comment_id):
         """Get comment by id."""
 
+        # Optimization: since we might be transvered by a view name, let's
+        # fail without even checking the database.
+        if type(comment_id) == str and not comment_id.isdigit():
+            raise KeyError('Not an integer')
+
         comment = (DBSession
                    .query(Comment)
                    .filter_by(id=comment_id)

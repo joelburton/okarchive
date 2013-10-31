@@ -39,6 +39,11 @@ class Journal(Base):
         :rtype: :py:class:`.post.Post`
         """
 
+        # Optimization: since we might be transvered by a view name, let's
+        # fail without even checking the database.
+        if type(key)==str and not key.isdigit():
+            raise KeyError('Not an integer')
+
         post = (DBSession
                 .query(Post)
                 .filter_by(id=key)
