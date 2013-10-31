@@ -14,7 +14,7 @@ from okarchive.models import (
     Post,
     Comment,
     RootFactory,
-    journals
+    journals_container as journals,
 )
 
 

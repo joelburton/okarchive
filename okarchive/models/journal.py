@@ -21,8 +21,8 @@ class Journal(Base):
 
     @property
     def __parent__(self):
-        from .journals import journals
-        return journals
+        from .journals import journals_container
+        return journals_container
 
     @property
     def __acl__(self):

@@ -55,4 +55,4 @@ class Journals:
         )
 
 
-journals = Journals()
+journals_container = Journals()

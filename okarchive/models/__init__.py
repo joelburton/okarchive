@@ -42,7 +42,7 @@ class SiteRoot:
     def __getitem__(self, item):
         """Return items in root; only journals."""
 
-        return {'journals': journals}[item]
+        return {'journals': journals_container}[item]
 
 
 siteRoot = SiteRoot()
@@ -50,7 +50,7 @@ siteRoot = SiteRoot()
 
 from .user import User
 from .journal import Journal
-from .journals import Journals, journals
+from .journals import Journals, journals_container
 from .post import Post
 from .comment import Comment
 
