@@ -7,19 +7,20 @@ README = open(os.path.join(here, 'README.txt'), encoding='utf-8').read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt'), encoding='utf-8').read()
 
 requires = [
-    'pyramid',
+    'pyramid>=1.5a2',
     'SQLAlchemy',
     'transaction',
+    'pyramid_chameleon',
     'pyramid_tm',
-    'pyramid_debugtoolbar',
+    'pyramid_debugtoolbar>=1.0.9',
     'zope.sqlalchemy',
     'waitress',
     'psycopg2',
-    'deform',
+    'deform>=2.0a2',
     'colanderalchemy',
     ]
 
-testing_extras = ['nose', 'coverage']
+testing_extras = ['nose', 'coverage', 'webtest']
 docs_extras = ['Sphinx']
 
 setup(name='okarchive',

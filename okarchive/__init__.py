@@ -34,5 +34,6 @@ def main(global_config, **settings):
     config.set_authorization_policy(authz_policy)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('deform', 'deform:static', cache_max_age=3600)
+    config.include('pyramid_chameleon')
     config.scan()
     return config.make_wsgi_app()

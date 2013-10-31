@@ -2,7 +2,7 @@ import csv
 import datetime
 
 def import_journal(zfile):
-    ...
+    pass
 
 def import_post(journal):
     with open('/tmp/test.csv') as fh:
