@@ -51,3 +51,4 @@ def main(argv=sys.argv): #pragma NOCOVER
                     lede='Why do we love first posts so much?',
                     text='This is the <i>very first post</i>.')
         DBSession.add(post)
+        post.add_comment(text='Yay!', user_id='ezra')
