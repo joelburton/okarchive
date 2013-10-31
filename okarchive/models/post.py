@@ -142,6 +142,21 @@ class Post(Base):
         server_onupdate=func.now(),
     )
 
+    privacy = Column(
+        String,
+        info={'colanderalchemy':
+                  dict(widget=deform.widget.RadioChoiceWidget(
+                      values=(
+                          ('private', 'Private: visible only to you'),
+                          ('public', 'Public: visible to everyone'),
+                          ('friends', 'Friends-only: visible only to friends'),
+                      ),
+                  ),
+                  title='Privacy',
+                  )},
+        default='public',
+        )
+
     journal = relationship(
         'Journal',
         backref=backref('posts',

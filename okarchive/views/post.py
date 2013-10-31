@@ -18,7 +18,7 @@ class PostView:
 
     schema = colanderalchemy.SQLAlchemySchemaNode(
         Post,
-        includes=['title', 'lede', 'text'],
+        includes=['title', 'lede', 'text', 'privacy'],
         title='Journal Post',
     )
 
